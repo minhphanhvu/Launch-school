@@ -5,7 +5,7 @@
   prompt("Welcome to calculator! Enter your name:")
 
   def operation_to_message(op)
-    case op
+    result = case op
     when '1'
       "Adding"
     when '2'
@@ -15,6 +15,7 @@
     when "4"
       "Dividing"
     end
+    result
   end
 
   name = ""
