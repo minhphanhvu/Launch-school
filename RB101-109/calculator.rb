@@ -1,8 +1,11 @@
+  require 'yaml'
+  MESSAGES = YAML.load_file('calculator_messages.yml')
+
   def prompt(message)
     puts("=> #{message}")
   end
 
-  prompt("Welcome to calculator! Enter your name:")
+  prompt(MESSAGES['welcome'])
 
   def operation_to_message(op)
     result = case op
@@ -23,7 +26,7 @@
     name = Kernel.gets().chomp()
 
     if name.empty?()
-      prompt("Make sure to use a valid name.")
+      prompt(MESSAGES['valid_name'])
     else
       break
     end
@@ -38,25 +41,25 @@
 loop do
   number1 = ''
   loop do
-    prompt("What's your first number?")
+    prompt(MESSAGES['first_number'])
     number1 = Kernel.gets().chomp()
 
     if valid_number?(number1)
       break
     else
-      prompt("Invalid number, please try again.")
+      prompt(MESSAGES['valid_number'])
     end
   end
 
   number2 = ''
   loop do
-    prompt("What's your second number?")
+    prompt(MESSAGES['second_number'])
     number2 = Kernel.gets().chomp()
 
     if valid_number?(number2)
       break
     else
-      prompt("Invalid number, please try again.")
+      prompt(MESSAGES['valid_number'])
     end
   end
 
@@ -94,7 +97,7 @@ loop do
   
   prompt("Your result is: #{result}")
   
-  prompt("Do you want to perform another calculation? (Y or y to calculate agian, otherwise please input anything character and press enter)")
+  prompt(MESSAGES['ask_calculator'])
 
   answer = Kernel.gets().chomp()
   break unless answer.downcase().start_with?('y')
