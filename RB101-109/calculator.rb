@@ -29,7 +29,7 @@
   end
 
   def valid_number?(num)
-    num.to_i != 0
+    /^\d+$/.match(num)
   end
 
   prompt("Hi #{name}")
