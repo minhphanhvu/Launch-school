@@ -1,0 +1,4 @@
+option_choose: "Choose one: rock, paper, scissors"
+invalid_choice: "Invalid choice, please input again"
+play_again: "Do you want to play again? yes or y for yes, otherwise no"
+goodbye: "Thank you for playing!"
