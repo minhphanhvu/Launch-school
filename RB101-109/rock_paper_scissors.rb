@@ -1,6 +1,9 @@
 require 'yaml'
-VALID_CHOICES = %w(rock paper scissors)
+VALID_CHOICES = %w(l p r sc sp)
 MESSAGES = YAML.load_file("rock_paper_scissors.yml")
+
+CHOICES = {'r' => ['sc', 'l'], 'l' => ['p','sp'],
+                'p' => ['r', 'sp'], 'sp' => ['sc','r'], 'sc' => ['p','l']}
 
 def system_clear
   system "clear"
@@ -15,9 +18,7 @@ def valid_input?(choice)
 end
 
 def win?(first, second)
-  (first == 'rock' && second == 'scissors') ||
-    (first == 'paper' && second == 'rock') ||
-    (first == 'scissors' && second == 'paper')
+  CHOICES[first].include?(second)
 end
 
 def display_result(player, computer)
@@ -45,7 +46,7 @@ def player_choose
 end
 
 def computer_choose
-  %w(rock paper scissors).sample
+  VALID_CHOICES.sample
 end
 
 def display_choices(player_choice, computer_choice)
@@ -60,6 +61,10 @@ end
 
 loop do
   system_clear
+
+  prompt(MESSAGES["game_explain"])
+
+  prompt(MESSAGES["abbreviation_rules"])
 
   choice = player_choose
 

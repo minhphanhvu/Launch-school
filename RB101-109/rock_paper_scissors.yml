@@ -1,4 +1,6 @@
-option_choose: "Choose one: rock, paper, scissors"
+option_choose: "Choose one: l, r, p, sp, sc"
 invalid_choice: "Invalid choice, please input again"
 play_again: "Do you want to play again? yes or y for yes, otherwise no"
 goodbye: "Thank you for playing!"
+game_explain: "rock beats scissors and lizard; lizard beats paper and spock; paper beats rock and spock; spock beats scissors and rock; and finally, scissors beats paper and lizard"
+abbreviation_rules: "Rules: l for lizard, p for paper, r for rock, sc for scissors, and sp for spock" 
