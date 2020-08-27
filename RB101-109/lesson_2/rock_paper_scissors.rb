@@ -84,6 +84,14 @@ def won_match?(score)
   score == WINS_NEEDED
 end
 
+def update_score(first, second, score)
+  if win?(first, second)
+    score += 1
+  else
+    score
+  end
+end
+
 #-- main program
 loop do
   system_clear
@@ -102,11 +110,8 @@ loop do
     puts
     computer_choice = computer_choose
 
-    if win?(choice, computer_choice)
-      player_wins += 1
-    elsif win?(computer_choice, choice)
-      computer_wins += 1
-    end
+    player_wins = update_score(choice, computer_choice, player_wins)
+    computer_wins = update_score(computer_choice, choice, computer_wins)
 
     display_choices(choice, computer_choice)
     display_result(choice, computer_choice)
