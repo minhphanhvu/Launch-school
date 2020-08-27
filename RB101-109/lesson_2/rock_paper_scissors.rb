@@ -1,10 +1,15 @@
 require 'yaml'
+WINS_NEEDED = 5
 VALID_CHOICES = %w(l p r sc sp)
 MESSAGES = YAML.load_file("rock_paper_scissors.yml")
 
 CHOICES = { 'r' => ['sc', 'l'], 'l' => ['p', 'sp'],
             'p' => ['r', 'sp'], 'sp' => ['sc', 'r'], 'sc' => ['p', 'l'] }
 
+CHOICES_DISPLAY = { 'r' => "rock", 'l' => 'lizard',
+                    'p' => 'paper', 'sc' => 'scissors', 'sp' => 'spock' }
+
+# define methods
 def system_clear
   system "clear"
 end
@@ -35,7 +40,7 @@ def player_choose
   choice = ''
   loop do
     prompt(MESSAGES["option_choose"])
-    choice = gets.chomp
+    choice = gets.chomp.downcase
     if valid_input?(choice)
       break
     else
@@ -50,12 +55,20 @@ def computer_choose
 end
 
 def display_choices(player_choice, computer_choice)
-  puts("You choose #{player_choice} and computer choice: #{computer_choice}")
+  puts("You choose #{CHOICES_DISPLAY[player_choice]}\
+ and computer choice: #{CHOICES_DISPLAY[computer_choice]}")
 end
 
-def play_again?
+def valid_yes_no?(choice)
+  choice == "yes" || choice == "y" || choice == "no" || choice == "n"
+end
+
+def ask_play_again
   prompt(MESSAGES["play_again"])
-  answer = gets.chomp
+  gets.chomp
+end
+
+def play_again?(answer)
   answer.downcase == 'y' || answer.downcase == 'yes'
 end
 
@@ -67,11 +80,18 @@ def display_winner(player_wins, computer_wins)
   end
 end
 
+def won_match?(score)
+  score == WINS_NEEDED
+end
+
+#-- main program
 loop do
   system_clear
   prompt(MESSAGES["game_explain"])
   prompt(MESSAGES["abbreviation_rules"])
 
+  puts
+  puts("You will need at least #{WINS_NEEDED} wins in total for victory!")
   player_wins = 0
   computer_wins = 0
 
@@ -90,18 +110,30 @@ loop do
 
     display_choices(choice, computer_choice)
     display_result(choice, computer_choice)
+
     prompt("Your wins at this time: #{player_wins}")
     prompt("Computer wins: #{computer_wins}")
-    break if player_wins == 5 || computer_wins == 5
+    break if won_match?(player_wins) || won_match?(computer_wins)
   end
 
   puts
   display_winner(player_wins, computer_wins)
   puts
 
-  break unless play_again?
+  answer = ""
+  loop do
+    answer = ask_play_again
+    if valid_yes_no?(answer)
+      break
+    else
+      prompt("Invalid choice, please answer again!")
+    end
+  end
+
+  break unless play_again?(answer)
 end
 
+# clear system and print out goodbye
 system_clear
 
 prompt(MESSAGES["goodbye"])
