@@ -60,7 +60,7 @@ def display_choices(player_choice, computer_choice)
 end
 
 def valid_yes_no?(choice)
-  choice == "yes" || choice == "y" || choice == "no" || choice == "n"
+  %w(yes y no n).include?(choice)
 end
 
 def ask_play_again
