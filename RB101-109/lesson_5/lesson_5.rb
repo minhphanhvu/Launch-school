@@ -99,11 +99,13 @@ arr = [a, b] # arr = [2, [5, 8]]
 # arr.object_id: 220; arr[0].object_id = 5; arr[1].object_id = 200
 
 arr[0] += 2 #arr[0] = 4 while a = 2
-# arr[0].object_id: 9; a.object_id = 5 --> arr[0] now points to another memory with value of 4 while a still points to a memory with value of 2
+# arr[0].object_id: 9; a.object_id = 5 
+#--> arr[0] now points to another memory with value of 4 while a still points to a memory with value of 2
 
 arr[1][0] -= a #arr = [4, [3, 8]]
 # b.object_id = 200; arr[1].object_id = 200; b[0].object_id = 7; b[1].object_id = 17; arr[1][0].object_id = 7; arr[1][1].object_id = 17
-#arr[1][0] points to another memory with value of 3, but since b also points to the whole sub-array, b[0] is forced to point to the same memory arr[1][0] points to
+#arr[1][0] points to another memory with value of 3, 
+#but since b also points to the whole sub-array, b[0] is forced to point to the same memory arr[1][0] points to
 
 # problem 8
 
