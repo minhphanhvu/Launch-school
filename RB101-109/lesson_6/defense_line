@@ -1,0 +1,20 @@
+
+[1mFrom:[0m /mnt/c/Users/finnv_m8q7jca/Desktop/Working place for github/Launch-school/RB101-109/lesson_6/tictactoe.rb:84 Object#defense_square:
+
+    [1;34m73[0m: [32mdef[0m [1;34mdefense_square[0m(board_hsh)
+    [1;34m74[0m:   defense_line = [1;36mnil[0m
+    [1;34m75[0m:   square = [1;36mnil[0m
+    [1;34m76[0m:   [1;34;4mWINNING_LINES[0m.each [32mdo[0m |line|
+    [1;34m77[0m:     [32mif[0m line.one? { |square| board_hsh[square] == [1;34;4mINITIAL_MARKER[0m }
+    [1;34m78[0m:       defense_line = line
+    [1;34m79[0m:       [32mbreak[0m
+    [1;34m80[0m:     [32mend[0m
+    [1;34m81[0m:   [32mend[0m
+    [1;34m82[0m: 
+    [1;34m83[0m:   [32mif[0m defense_line 
+ => [1;34m84[0m:     binding.pry
+    [1;34m85[0m:     square = defense_line.select { |num| board_hsh[num] == [1;34;4mINITIAL_MARKER[0m }.first
+    [1;34m86[0m:   [32mend[0m
+    [1;34m87[0m:   square
+    [1;34m88[0m: [32mend[0m
+

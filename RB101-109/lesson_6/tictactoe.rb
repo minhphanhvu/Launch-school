@@ -1,15 +1,23 @@
+require 'byebug'
 INITIAL_MARKER = ' '
 PLAYER_MARK = "X"
 COMP_MARK = "O"
+WINS_NEEDED = 2
+WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
+                  [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
+                  [[1, 5, 9], [3, 5, 7]]
 
 # methods defined
 
 def prompt(mes)
-  puts " #{mes}"
+  puts "=> #{mes}"
+end
+
+def system_clear
+  system 'clear'
 end
 
 def display_board(board_hsh)
-  system 'clear'
   puts "Your marker: #{PLAYER_MARK}, computer marker: #{COMP_MARK}"
   puts ""
   puts "     |     |     "
@@ -36,10 +44,22 @@ def empty_squares(board_hsh)
   board_hsh.keys.select { |num| board_hsh[num] == INITIAL_MARKER }
 end
 
+def joinor(array, delimiter = ', ', last_word = "or")
+  array = array.join.split("")
+  if array.length == 1
+    array[0]
+  elsif array.length == 2
+    array[0] + " " + last_word + " " + array[1]
+  else
+    array[-1] = " #{last_word} #{array[-1]}"
+    array[0...array.length - 1].join("#{delimiter}") + array[-1]
+  end
+end
+
 def player_move!(board_hsh)
   square = ""
   loop do
-    prompt "Choose a square (#{empty_squares(board_hsh).join(', ')}): "
+    prompt "Choose a square (#{joinor(empty_squares(board_hsh))}): "
     square = gets.chomp.to_i
     if empty_squares(board_hsh).include?(square)
       break
@@ -50,9 +70,32 @@ def player_move!(board_hsh)
   board_hsh[square] = PLAYER_MARK
 end
 
+def defense_square(board_hsh)
+  defense_line = nil
+  square = nil
+  WINNING_LINES.each do |line|
+    if line.one? { |square| board_hsh[square] == INITIAL_MARKER }
+      defense_line = line
+      break
+    end
+  end
+
+  if defense_line 
+    square = defense_line.select { |num| board_hsh[num] == INITIAL_MARKER }.first
+  end
+  debugger
+  square
+end
+
 def comp_move!(board_hsh)
-  square = empty_squares(board_hsh).sample
-  board_hsh[square] = COMP_MARK
+  square = ''
+  if !!defense_square(board_hsh)
+    square = defense_square(board_hsh)
+    board_hsh[square] = COMP_MARK
+  else
+    square = empty_squares(board_hsh).sample
+    board_hsh[square] = COMP_MARK
+  end
 end
 
 def board_full?(board_hsh)
@@ -64,13 +107,9 @@ def won?(board_hsh)
 end
 
 def who_win(board_hsh)
-  winning_lines = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
-                  [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
-                  [[1, 5, 9], [3, 5, 7]]
-
-  winning_lines.each do |line|
+  WINNING_LINES.each do |line|
     if line.all? { |num| board_hsh[num] == PLAYER_MARK }
-      return "Player"
+      return 'player'
     elsif line.all? { |num| board_hsh[num] == COMP_MARK }
       return "Computer"
     end
@@ -78,30 +117,77 @@ def who_win(board_hsh)
   nil
 end
 
+def display_round_winner(board)
+  if won?(board)
+    prompt "#{who_win(board)} won this round!"
+  else
+    prompt "Tie this round!"
+  end
+end
+
+def update_score(scores, board)
+  if who_win(board) == 'player'
+    scores['player'] += 1
+  elsif who_win(board) == "Computer"
+    scores['comp'] += 1
+  end
+end
+
+def display_scores(scores)
+  prompt "Your score: #{scores['player']}; computer scores: #{scores['comp']}"
+end
+
+def victory?(scores)
+  scores['player'] == WINS_NEEDED || scores['comp'] == WINS_NEEDED
+end
+
+def display_final_victor(scores)
+  if scores['player'] == WINS_NEEDED
+    prompt "Congratulations! Your victory!"
+  else
+    prompt "Better luck next time, looks like the AI outsmarts you"
+  end
+end
+
+def reset_scores(scores)
+  scores['player'] = 0
+  scores['comp'] = 0
+end
+
 # main program
 
+scores = { 'player' => 0, 'comp' => 0 }
+
 loop do
-  board = initialize_board
+  reset_scores(scores)
+  prompt("You need at least #{WINS_NEEDED} for a total victory!")
 
   loop do
+    board = initialize_board
+
+    loop do
+      display_board(board)
+
+      player_move!(board)
+      break if won?(board) || board_full?(board)
+
+      comp_move!(board)
+      break if won?(board) || board_full?(board)
+    end
+
     display_board(board)
-    player_move!(board)
-    break if won?(board) || board_full?(board)
-
-    comp_move!(board)
-    break if won?(board) || board_full?(board)
+    display_round_winner(board)
+    
+    update_score(scores, board)
+    display_scores(scores)
+    break if victory?(scores)
   end
 
-  display_board(board)
-
-  if won?(board)
-    prompt "#{who_win(board)} won!"
-  else
-    prompt "Tie!"
-  end
+  display_final_victor(scores)
 
   prompt "Do you want to play again? (y or n)"
   answer = gets.chomp
+  system_clear
   break unless answer.downcase.start_with?('y')
 end
 
