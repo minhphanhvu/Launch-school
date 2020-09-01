@@ -70,50 +70,55 @@ def player_move!(board_hsh)
   board_hsh[square] = PLAYER_MARK
 end
 
-def comp_line(empty_mark, mark)
+def computer_line(empty_mark, mark, board_hsh)
   comp_line = nil
   WINNING_LINES.each do |line|
-    if line.one? { |square| board_hsh[square] == empty_mark}
+    if line.one? { |square| board_hsh[square] == empty_mark }
       if board_hsh.values_at(*line).count(mark) == 2
         comp_line = line
+        break
       end
     end
   end
   comp_line
 end
 
-def off_def_comp(board_hsh)
-  comp_line = nil
-  comp_line = comp_line(COMP_MARK, INITIAL_MARKER)
-
-  if !!comp_line
-    return comp_line
-  end
-
-  WINNING_LINES.each do |line|
-    if line.one? { |square| board_hsh[square] == INITIAL_MARKER }
-      if board_hsh.values_at(*line).count(PLAYER_MARK) == 2
-        return comp_line = line
-      end
-    end
-  end
-  comp_line
+def off_comp_line(board_hsh)
+  computer_line(INITIAL_MARKER, COMP_MARK, board_hsh)
 end
 
-def comp_square(comp_line, board_hsh)
+def def_comp_line(board_hsh)
+  computer_line(INITIAL_MARKER, PLAYER_MARK, board_hsh)
+end
+
+def off_comp_square(board_hsh)
+  comp_line = off_comp_line(board_hsh)
   if !!comp_line
     comp_line.select { |num| board_hsh[num] == INITIAL_MARKER }.first
   end
 end
 
-def comp_move!(board_hsh)
-  square = comp_square(off_def_comp(board_hsh), board_hsh)
-  if !!square
-    board_hsh[square] = COMP_MARK
-  else
-    square = empty_squares(board_hsh).sample
-    board_hsh[square] = COMP_MARK
+def def_comp_square(board_hsh)
+  comp_line = def_comp_line(board_hsh)
+  if !!comp_line
+    comp_line.select { |num| board_hsh[num] == INITIAL_MARKER }.first
   end
+end
+
+def get_comp_square(board_hsh)
+  if !!off_comp_square(board_hsh)
+    off_comp_square(board_hsh)
+  elsif !!def_comp_square(board_hsh)
+    def_comp_square(board_hsh)
+  end
+end
+
+def comp_move!(board_hsh)
+  square = get_comp_square(board_hsh)
+  if !square
+    square = empty_squares(board_hsh).sample
+  end
+  board_hsh[square] = COMP_MARK
 end
 
 def board_full?(board_hsh)
