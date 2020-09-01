@@ -4,8 +4,8 @@ PLAYER_MARK = "X"
 COMP_MARK = "O"
 WINS_NEEDED = 2
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
-                  [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
-                  [[1, 5, 9], [3, 5, 7]]
+                [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
+                [[1, 5, 9], [3, 5, 7]]
 
 # methods defined
 
@@ -70,27 +70,45 @@ def player_move!(board_hsh)
   board_hsh[square] = PLAYER_MARK
 end
 
-def defense_square(board_hsh)
-  defense_line = nil
-  square = nil
+def comp_line(empty_mark, mark)
+  comp_line = nil
   WINNING_LINES.each do |line|
-    if line.one? { |square| board_hsh[square] == INITIAL_MARKER }
-      defense_line = line
-      break
+    if line.one? { |square| board_hsh[square] == empty_mark}
+      if board_hsh.values_at(*line).count(mark) == 2
+        comp_line = line
+      end
     end
   end
+  comp_line
+end
 
-  if defense_line 
-    square = defense_line.select { |num| board_hsh[num] == INITIAL_MARKER }.first
+def off_def_comp(board_hsh)
+  comp_line = nil
+  comp_line = comp_line(COMP_MARK, INITIAL_MARKER)
+
+  if !!comp_line
+    return comp_line
   end
-  debugger
-  square
+
+  WINNING_LINES.each do |line|
+    if line.one? { |square| board_hsh[square] == INITIAL_MARKER }
+      if board_hsh.values_at(*line).count(PLAYER_MARK) == 2
+        return comp_line = line
+      end
+    end
+  end
+  comp_line
+end
+
+def comp_square(comp_line, board_hsh)
+  if !!comp_line
+    comp_line.select { |num| board_hsh[num] == INITIAL_MARKER }.first
+  end
 end
 
 def comp_move!(board_hsh)
-  square = ''
-  if !!defense_square(board_hsh)
-    square = defense_square(board_hsh)
+  square = comp_square(off_def_comp(board_hsh), board_hsh)
+  if !!square
     board_hsh[square] = COMP_MARK
   else
     square = empty_squares(board_hsh).sample
@@ -175,9 +193,10 @@ loop do
       break if won?(board) || board_full?(board)
     end
 
+    system_clear
     display_board(board)
     display_round_winner(board)
-    
+
     update_score(scores, board)
     display_scores(scores)
     break if victory?(scores)
