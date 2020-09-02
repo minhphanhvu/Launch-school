@@ -115,7 +115,9 @@ end
 
 def comp_move!(board_hsh)
   square = get_comp_square(board_hsh)
-  if !square
+  if board_hsh.values[4] == " "
+    square = 5
+  elsif !square
     square = empty_squares(board_hsh).sample
   end
   board_hsh[square] = COMP_MARK
