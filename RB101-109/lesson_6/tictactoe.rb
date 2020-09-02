@@ -1,3 +1,4 @@
+require 'yaml'
 require 'byebug'
 INITIAL_MARKER = ' '
 PLAYER_MARK = "X"
