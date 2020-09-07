@@ -71,9 +71,68 @@ p palindromes('knitting cassettes') #== [
 #   'nittin', 'itti', 'tt', 'ss', 'settes', 'ette', 'tt'
 # ]
 
-# p6
-def fizzbuzz(num1, num2)
+# p7
 
+def repeater(string)
+  new_string = ""
+  string.each_char { |char| new_string << char*2 }
+  new_string
 end
 
-p fizzbuzz(1, 15) # -> 1, 2, Fizz, 4, Buzz, Fizz, 7, 8, Fizz, Buzz, 11, Fizz, 13, 14, FizzBuzz
+p "p7---"
+p repeater('Hello') #== "HHeelllloo"
+p repeater("Good job!") #== "GGoooodd  jjoobb!!"
+p repeater('') #== ''
+
+# p8
+
+def double_consonants(string)
+  new_string = ""
+  alphabet = ("a".."z").to_a + ("A".."Z").to_a
+  vowels = "aeuioAEUIO"
+  string.each_char do |char|
+    if !alphabet.include?(char) || vowels.include?(char)
+      new_string << char
+    else 
+      new_string << char*2
+    end
+  end
+  new_string
+end
+
+p "p8----"
+
+p double_consonants('String') == "SSttrrinngg"
+p double_consonants("Hello-World!") == "HHellllo-WWorrlldd!"
+p double_consonants("July 4th") == "JJullyy 4tthh"
+p double_consonants('') == ""
+
+# p9
+def reversed_number(num)
+  num.to_s.reverse.to_i
+end
+
+p "p9----"
+p reversed_number(12345) == 54321
+p reversed_number(12213) == 31221
+p reversed_number(456) == 654
+p reversed_number(12000) == 21 # No leading zeros in return value!
+p reversed_number(12003) == 30021
+p reversed_number(1) == 1
+
+# p10
+
+def center_of(string)
+  if string.size.odd?
+    string[string.size/2]
+  else
+    string[(string.size/2-1)..string.size/2]
+  end
+end
+
+p "p10----"
+p center_of('I love ruby') #== 'e'
+p center_of('Launch School') == ' '
+p center_of('Launch') #== 'un'
+p center_of('Launchschool') #== 'hs'
+p center_of('x') == 'x'
