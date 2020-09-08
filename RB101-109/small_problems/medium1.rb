@@ -108,7 +108,123 @@ diamond(5)
 
 # p6
 
+# def minilang(commands)
+#   register = 0
+#   commands = commands.split(' ')
+#   stack = []
+#   commands.each do |command|
+#     case command
+#     when command.to_i.to_s then register = command.to_i
+#     when 'PUSH' then stack << command.to_i
+#     when 'ADD' then register += stack.pop
+#     when 'SUB' then register -= stack.pop
+#     when 'MULT' then register *= stack.pop
+#     when 'DIV' then register /= stack.pop
+#     when 'MOD' then register %= stack.pop
+#     when 'POP' then register = stack.pop
+#     when 'PRINT' then puts register
+#     end
+#   end
+# end
 
+# p "p6----"
+# p minilang('PRINT')
+# # 0
+# p minilang('5 PUSH 3 MULT PRINT')
+# # 15
+# p minilang('5 PRINT PUSH 3 PRINT ADD PRINT')
+# # 5
+# # 3
+# # 8
+# p minilang('5 PUSH POP PRINT')
+# # 5
+# p minilang('3 PUSH 4 PUSH 5 PUSH PRINT ADD PRINT POP PRINT ADD PRINT')
+# # 5
+# # 10
+# # 4
+# # 7
+# p minilang('3 PUSH PUSH 7 DIV MULT PRINT ')
+# # 6
+# p minilang('4 PUSH PUSH 7 MOD MULT PRINT ')
+# # 12
+# p minilang('-3 PUSH 5 SUB PRINT')
+# # 8
+# p minilang('6 PUSH')
+# # (nothing printed; no PRINT commands)
 
+# p7
+def word_to_digit(string)
+  digits = {
+  'zero' => '0', 'one' => '1', 'two' => '2', 'three' => '3', 'four' => '4',
+  'five' => '5', 'six' => '6', 'seven' => '7', 'eight' => '8', 'nine' => '9'
+           }
+  digits.keys.each do |word|
+    string.gsub!(/\b#{word}\b/, digits[word])
+  end 
+  string
+end
+
+p "p7----"
+p word_to_digit('Please call me at five five five one two three four. Thanks.') == 'Please call me at 5 5 5 1 2 3 4. Thanks.'
+
+# p8
+
+def fibonacci(num)
+  if num == 1
+    1
+  elsif num == 2
+    1
+  else
+    fibonacci(num-1) + fibonacci(num-2)
+  end
+end
+
+p "p8---"
+p fibonacci(1) == 1
+p fibonacci(2) == 1
+p fibonacci(3) == 2
+p fibonacci(4) == 3
+p fibonacci(5) == 5
+p fibonacci(12) == 144
+p fibonacci(20) == 6765
+
+# p9
+
+def fibonacci2(num)
+  if num == 1 || num == 2
+    return 1
+  else
+    leading_fibo = 1
+    trailing_fibo = 1
+    cur_fibo = 1
+    check = 2
+
+    while check != num
+      cur_fibo = trailing_fibo + leading_fibo
+      leading_fibo = trailing_fibo
+      trailing_fibo = cur_fibo
+      check += 1
+    end
+
+  end
+  cur_fibo
+end
+
+p "p9---"
+p fibonacci2(20) #== 6765
+p fibonacci2(100) #== 354224848179261915075
+
+# p10
+
+def fibonacci_last(num)
+  fibonacci2(num).to_s[-1].to_i
+end
+
+p fibonacci_last(15)        # -> 0  (the 15th Fibonacci number is 610)
+p fibonacci_last(20)        # -> 5 (the 20th Fibonacci number is 6765)
+p fibonacci_last(100)       # -> 5 (the 100th Fibonacci number is 354224848179261915075)
+p fibonacci_last(100_001)   # -> 1 (this is a 20899 digit number)
+p fibonacci_last(1_000_007) # -> 3 (this is a 208989 digit number)
+p fibonacci_last(123456789) # -> 4
 
 
