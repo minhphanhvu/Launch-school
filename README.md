@@ -12,3 +12,5 @@ Update:
 3/September 16, 2020:
 -practicing problems to prepare for live interview RB 109 
 
+4/September 29, 2020:
+- start OOP
