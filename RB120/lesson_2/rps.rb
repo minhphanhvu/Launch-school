@@ -1,5 +1,11 @@
+module Message
+  def message(mes)
+    puts "=> #{mes}"
+  end
+end
+
 class Move
-  VALUES = ['r', 'p', 'sc']
+  VALUES = ['r', 'p', 'sc', 'l', 'sp']
   attr_reader :value
 
   def initialize(value)
@@ -18,26 +24,32 @@ class Move
     @value == 'p'
   end
 
+  def lizard?
+    @value == 'l'
+  end
+
+  def spock?
+    @value == 'sp'
+  end
+
   def >(other_move)
-    case @value
-    when 'r'
-      return true if other_move.scissors?
-    when 'p'
-      return true if other_move.rock?
-    when 'sc'
-      return true if other_move.paper?
+    if rock? && (other_move.scissors? || other_move.lizard?) ||
+       paper? && (other_move.spock? || other_move.rocks?) ||
+       scissors? && (other_move.lizard? || other_move.paper?) ||
+       lizard? && (other_move.spock? || other_move.paper?) ||
+       spock? && (other_move.scissors? || other_move.rock?) 
+      return true
     end
     false
   end
 
   def <(other_move)
-    case @value
-    when 'r'
-      return true if other_move.paper?
-    when 'p'
-      return true if other_move.scissors?
-    when 'sc'
-      return true if other_move.rock?
+    if rock? && (other_move.paper? || other_move.spock?) ||
+       paper? && (other_move.scissors? || other_move.lizard?) ||
+       scissors? && (other_move.rock? || other_move.spock?) ||
+       lizard? && (other_move.scissors? || other_move.rock?) ||
+       spock? && (other_move.paper? || other_move.lizard)
+      return true
     end
     false
   end
@@ -48,10 +60,11 @@ class Move
 end
 
 class Player
-  attr_accessor :move, :name
+  attr_accessor :move, :name, :scores
 
   def initialize
     set_name
+    @scores = 0
   end
 end
 
@@ -59,7 +72,7 @@ class Human < Player
   def choose
     choice = nil
     loop do
-      puts "Please choose your move: r(Rock), p(Paper), sc(Scissors)"
+      puts "Please choose your move: r(Rock), p(Paper), sc(Scissors), l(Lizard), or sp(Spock)"
       choice = gets.chomp
       self.move = Move.new(choice)
       break if Move::VALUES.include?(choice)
@@ -90,6 +103,8 @@ class Computer < Player
 end
 
 class RPSGame
+  include Message
+  FINAL_SCORES = 3
   attr_accessor :human, :computer
 
   def initialize
@@ -100,9 +115,15 @@ class RPSGame
   def play
     display_welcome_message
     loop do
-      human.choose
-      computer.choose
-      display_moves
+      loop do
+        puts
+        human.choose
+        computer.choose
+        display_moves
+        update_scores
+        display_scores
+        break if win?
+      end
       display_winner
       break if !play_again?
     end
@@ -120,18 +141,45 @@ class RPSGame
   end
 
   def display_moves
-    puts "#{human.name} chose #{human.move}."
-    puts "#{computer.name} move #{computer.move}"
+    message("#{human.name} chose #{human.move}.")
+    message("#{computer.name} move #{computer.move}")
+  end
+
+  def update_scores
+    if human.move > computer.move
+      human.scores += 1
+    elsif human.move < computer.move
+      computer.scores += 1
+    end
+  end
+
+  def display_scores
+    if human.move > computer.move
+      message("#{human.name} won this round!")
+    elsif human.move < computer.move
+      message("#{computer.name} won this round!")
+    else
+      message("A tie this round!")
+    end
+    message("Current scores: #{human.name} #{human.scores}, #{computer.name} #{computer.scores}")
+  end
+
+  def win?
+    human.scores == FINAL_SCORES || computer.scores == FINAL_SCORES
   end
 
   def display_winner
-    if human.move > computer.move
-      puts "#{human.name} won!"
-    elsif human.move < computer.move
-      puts "#{computer.name} won!"
+    message("Final scores: #{human.name}: #{human.scores}, #{computer.name}: #{computer.scores}")
+    if human.scores == FINAL_SCORES
+      message("#{human.name} won!")
     else
-      puts "A tie!"
+      message("#{computer.name} won!")
     end
+  end
+
+  def reset_scores
+    human.scores = 0
+    computer.scores = 0
   end
 
   def play_again?
@@ -142,7 +190,10 @@ class RPSGame
       break if %w(y n).include?(choice.downcase)
       puts "Invalid input, please choose again!"
     end
-    return true if choice == 'y'
+    if choice == 'y'
+      reset_scores
+      return true
+    end
     false
   end
 end
