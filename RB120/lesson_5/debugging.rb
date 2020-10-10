@@ -297,6 +297,7 @@ puts blog_post
 
 class Length
   attr_reader :value, :unit
+  include Comparable
 
   def initialize(value, unit)
     @value = value
@@ -315,32 +316,12 @@ class Length
     convert_to(:nmi, { km: 1.8519993, mi: 1.15078, nmi: 1 })
   end
 
-  def ==(other)
+  def <=>(other)
     case unit
-    when :km  then value == other.as_kilometers.value
-    when :mi  then value == other.as_miles.value
-    when :nmi then value == other.as_nautical_miles.value
+    when :km  then value <=> other.as_kilometers.value
+    when :mi  then value <=> other.as_miles.value
+    when :nmi then value <=> other.as_nautical_miles.value
     end
-  end
-
-  def <(other)
-    case unit
-    when :km  then value < other.as_kilometers.value
-    when :mi  then value < other.as_miles.value
-    when :nmi then value < other.as_nautical_miles.value
-    end
-  end
-
-  def <=(other)
-    self < other || self == other
-  end
-
-  def >(other)
-    !(self <= other)
-  end
-
-  def >=(other)
-    self > other || self == other
   end
 
   def to_s
@@ -364,3 +345,306 @@ puts [Length.new(1, :mi), Length.new(1, :nmi), Length.new(1, :km)].sort
 # 1 km
 # 1 mi
 # 1 nmi
+
+# p7
+
+class BankAccount
+  attr_reader :balance
+
+  def initialize(account_number, client)
+    @account_number = account_number
+    @client = client
+    @balance = 0
+  end
+
+  def deposit(amount)
+    if amount > 0
+      self.balance += amount
+      "$#{amount} deposited. Total balance is $#{balance}."
+    else
+      "Invalid. Enter a positive amount."
+    end
+  end
+
+  def withdraw(amount)
+    if amount <= balance
+      success = (self.balance -= amount)
+    else
+      success = false
+    end
+
+    if success
+      "$#{amount} withdrawn. Total balance is $#{balance}."
+    else
+      "Invalid. Enter positive amount less than or equal to current balance ($#{balance})."
+    end
+  end
+
+  def balance=(new_balance)
+    if valid_transaction?(new_balance)
+      @balance = new_balance
+      true
+    else
+      false
+    end
+  end
+
+  def valid_transaction?(new_balance)
+    new_balance >= 0
+  end
+end
+
+# Example
+
+p "p7----"
+account = BankAccount.new('5538898', 'Genevieve')
+
+                          # Expected output:
+p account.balance         # => 0
+p account.deposit(50)     # => $50 deposited. Total balance is $50.
+p account.balance         # => 50
+p account.withdraw(80)    # => Invalid. Enter positive amount less than or equal to current balance ($50).
+p account.balance         # => 50
+
+# p8
+
+class Task
+  attr_accessor :name, :priority
+
+  def initialize(name, priority=:normal)
+    @name = name
+    @priority = priority
+  end
+
+  def to_s
+    "[" + sprintf("%-6s", priority) + "] #{name}"
+  end
+end
+
+class TaskManager
+  attr_reader :owner
+  attr_accessor :tasks
+
+  def initialize(owner)
+    @owner = owner
+    @tasks = []
+  end
+
+  def add_task(name, priority=:normal)
+    task = Task.new(name, priority)
+    tasks.push(task)
+  end
+
+  def complete_task(task_name)
+    completed_task = nil
+
+    tasks.each do |task|
+      completed_task = task if task.name == task_name
+    end
+
+    if completed_task
+      tasks.delete(completed_task)
+      puts "Task '#{completed_task.name}' complete! Removed from list."
+    else
+      puts "Task not found."
+    end
+  end
+
+  def display_all_tasks
+    display(tasks)
+  end
+
+  def display_high_priority_tasks
+    high_tasks = tasks.select do |task|
+      task.priority == :high
+    end
+
+    display(high_tasks)
+  end
+
+  private
+
+  def display(tasks)
+    puts "--------"
+    tasks.each do |task|
+      puts task
+    end
+    puts "--------"
+  end
+end
+
+p "p8----"
+
+valentinas_tasks = TaskManager.new('Valentina')
+
+valentinas_tasks.add_task('pay bills', :high)
+valentinas_tasks.add_task('read OOP book')
+valentinas_tasks.add_task('practice Ruby')
+valentinas_tasks.add_task('run 5k', :low)
+
+valentinas_tasks.complete_task('read OOP book')
+
+valentinas_tasks.display_all_tasks
+valentinas_tasks.display_high_priority_tasks
+
+# p9
+
+class Mail
+  def to_s
+    "#{self.class}"
+  end
+end
+
+class Email < Mail
+  attr_accessor :subject, :body
+
+  def initialize(subject, body)
+    @subject = subject
+    @body = body
+  end
+end
+
+class Postcard < Mail
+  attr_reader :text
+
+  def initialize(text)
+    @text = text
+  end
+end
+
+module Mailing
+  def receive(mail, sender)
+    mailbox << mail unless reject?(sender)
+  end
+
+  # Change if there are sources you want to block.
+  def reject?(sender)
+    false
+  end
+
+  def send(destination, mail)
+    "Sending #{mail} from #{name} to: #{destination}"
+    # Omitting the actual sending.
+  end
+end
+
+class CommunicationsProvider
+  include Mailing
+  attr_reader :name, :account_number
+
+  def initialize(name, account_number=nil)
+    @name = name
+    @account_number = account_number
+  end
+end
+
+class EmailService < CommunicationsProvider
+  include Mailing
+
+  attr_accessor :email_address, :mailbox
+
+  def initialize(name, account_number, email_address)
+    super(name, account_number)
+    @email_address = email_address
+    @mailbox = []
+  end
+
+  def empty_inbox
+    self.mailbox = []
+  end
+end
+
+class TelephoneService < CommunicationsProvider
+  def initialize(name, account_number, phone_number)
+    super(name, account_number)
+    @phone_number = phone_number
+  end
+end
+
+class PostalService < CommunicationsProvider
+  attr_accessor :street_address, :mailbox
+
+  def initialize(name, street_address)
+    super(name)
+    @street_address = street_address
+    @mailbox = []
+  end
+
+  def change_address(new_address)
+    self.street_address = new_address
+  end
+end
+
+p "p9----"
+
+rafaels_email_account = EmailService.new('Rafael', 111, 'Rafael@example.com')
+johns_phone_service   = TelephoneService.new('John', 122, '555-232-1121')
+johns_postal_service  = PostalService.new('John', '47 Sunshine Ave.')
+ellens_postal_service = PostalService.new('Ellen', '860 Blackbird Ln.')
+
+puts johns_postal_service.send(ellens_postal_service.street_address, Postcard.new('Greetings from Silicon Valley!'))
+# => undefined method `860 Blackbird Ln.' for #<PostalService:0x00005571b4aaebe8> (NoMethodError)
+
+# p10
+
+class AuthenticationError < Exception; end
+
+# A mock search engine
+# that returns a random number instead of an actual count.
+class SearchEngine
+  def self.count(query, api_key)
+    unless valid?(api_key)
+      raise AuthenticationError, 'API key is not valid.'
+    end
+
+    rand(200_000)
+  end
+
+  private
+
+  def self.valid?(key)
+    key == 'LS1A'
+  end
+end
+
+module DoesItRock
+  API_KEY = 'LS2A'
+
+  class NoScore; end
+
+  class Score
+    def self.for_term(term)
+      positive = SearchEngine.count(%{"#{term} rocks"}, API_KEY).to_f
+      negative = SearchEngine.count(%{"#{term} is not fun"}, API_KEY).to_f
+
+      positive / (positive + negative)
+    rescue AuthenticationError
+      NoScore.new
+    end
+  end
+
+  def self.find_out(term)
+    score = Score.for_term(term)
+
+    case score
+    when NoScore
+      "No idea about #{term}..."
+    when 0...0.5
+      "#{term} is not fun."
+    when 0.5
+      "#{term} seems to be ok..."
+    else
+      "#{term} rocks!"
+    end
+  rescue StandardError => e
+    e.message
+  end
+end
+
+# Example (your output may differ)
+
+p "p10---"
+
+puts DoesItRock.find_out('Sushi')       # Sushi seems to be ok...
+puts DoesItRock.find_out('Rain')        # Rain is not fun.
+puts DoesItRock.find_out('Bug hunting') # Bug hunting rocks!
