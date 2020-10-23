@@ -14,3 +14,5 @@ Update:
 
 4/September 29, 2020:
 - start OOP
+
+5/October 17, 2020: Passed written assessment RB129
