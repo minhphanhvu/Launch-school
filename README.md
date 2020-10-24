@@ -16,3 +16,5 @@ Update:
 - start OOP
 
 5/October 17, 2020: Passed written assessment RB129
+
+6/October 24, 2020: Passed live interview 129 and start RB 130
