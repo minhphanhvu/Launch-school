@@ -55,5 +55,16 @@ class TypeTest < MiniTest::Test
     value = Numeric.new
     assert_instance_of(Numeric, value)
   end
+
+  def test_kind_of
+    assert_kind_of(Numeric, 1)
+  end
 end
 
+class RefutationTest < MiniTest::Test
+  def test_refute_include
+    arr = [1, 2, 3]
+    value = 4
+    refute(arr.include?(value))
+  end
+end
