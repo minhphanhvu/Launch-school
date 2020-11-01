@@ -214,34 +214,41 @@ p result == nil
 # p10
 p "p10---"
 
-def each_cons()
+def each_cons2(arr, num_ele)
+  arr[0..-num_ele].each_with_index do |ele, idx|
+    start = idx + 1
+    finish = idx + (num_ele - 1)
+    yield(ele, *arr[start..finish])
+  end
+  nil
+end
 
 hash = {}
-each_cons([1, 3, 6, 10], 1) do |value|
+each_cons2([1, 3, 6, 10], 1) do |value|
   hash[value] = true
 end
 p hash == { 1 => true, 3 => true, 6 => true, 10 => true }
 
 hash = {}
-each_cons([1, 3, 6, 10], 2) do |value1, value2|
+each_cons2([1, 3, 6, 10], 2) do |value1, value2|
   hash[value1] = value2
 end
 p hash == { 1 => 3, 3 => 6, 6 => 10 }
 
 hash = {}
-each_cons([1, 3, 6, 10], 3) do |value1, *values|
+each_cons2([1, 3, 6, 10], 3) do |value1, *values|
   hash[value1] = values
 end
 p hash == { 1 => [3, 6], 3 => [6, 10] }
 
 hash = {}
-each_cons([1, 3, 6, 10], 4) do |value1, *values|
+each_cons2([1, 3, 6, 10], 4) do |value1, *values|
   hash[value1] = values
 end
 p hash == { 1 => [3, 6, 10] }
 
 hash = {}
-each_cons([1, 3, 6, 10], 5) do |value1, *values|
+each_cons2([1, 3, 6, 10], 5) do |value1, *values|
   hash[value1] = values
 end
 p hash == {}
