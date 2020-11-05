@@ -12,9 +12,15 @@ class TransactionTest < MiniTest::Test
 
   def test_prompt_for_payment
     input = StringIO.new("80\n")
-    output = <<~HEREDOC
-      You owe $50.\nHow much are you paying? 
-    HEREDOC
-    assert_output(output) { @transaction.prompt_for_payment(input: input) }
+    output = StringIO.new
+    # output = <<~HEREDOC
+    #   You owe $50.
+    #   How much are you paying? 
+    # HEREDOC
+    # assert_output(output) { @transaction.prompt_for_payment(input: input) }
+    @transaction.prompt_for_payment(input: input, output: output)
+    assert_equal(80, @transaction.amount_paid)
   end
+
+  
 end
