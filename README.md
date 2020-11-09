@@ -1,6 +1,6 @@
 Launch School collection. 
 
-Reminder: lesson6 RB 101: need to update the two games before moving on - want to try some AI behaviour in the game
+Reminder:
 
 Update:
 1/August 24, 2020: 
