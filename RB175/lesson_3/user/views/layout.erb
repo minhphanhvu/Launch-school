@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title><%= @title %></title>
+    <link rel="stylesheet" href="/stylesheets/layout.css">
+  </head>
+
+  <body>
+    <main>
+      <%= yield %>
+    </main>
+
+    <footer>
+      <div class="users-menu">
+        <ul class="users-list">
+          <% @users.each do |name| %>
+            <li class="users-item">
+              <a href="/<%= name %>" class="users-link"><%= name.to_s %></a> 
+            </li>
+          <% end %>
+        </ul>
+      </div>
+      <p><%= @footer_mes %></p>
+    </footer>
+  </body>
+</html>

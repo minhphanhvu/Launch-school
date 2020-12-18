@@ -1,0 +1,9 @@
+<div class="users-menu">
+  <ul class="users-list">
+    <% @users.each do |name| %>
+      <li class="users-item">
+        <a href="/<%= name %>" class="users-link"><%= name.to_s %></a> 
+      </li>
+    <% end %>
+  </ul>
+</div>

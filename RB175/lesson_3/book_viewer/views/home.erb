@@ -2,10 +2,10 @@
 
 <div class="pure-menu">
   <ul class="pure-menu-list">
-  <% @chapters.each_with_index do |chapter, index| %>
-    <li class="pure-menu-item">
-      <a href="/chapters/<%= index + 1 %>" class="pure-menu-link"><%= chapter %></a>
-    </li>
-  <% end %>
+    <% @chapters.each_with_index do |chapter, index| %>
+      <li class="pure-menu-item">
+        <a href="/chapters/<%= index + 1 %>" class="pure-menu-link"><%= chapter %></a>
+      </li>
+    <% end %>
   </ul>
 </div>

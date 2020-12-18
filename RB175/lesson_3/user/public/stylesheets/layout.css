@@ -1,0 +1,14 @@
+body {
+  position: relative;
+}
+
+footer {
+  position: fixed;
+  bottom :0;
+  color: red;
+  list-style: none;
+}
+
+ul {
+  list-style: none;
+}
