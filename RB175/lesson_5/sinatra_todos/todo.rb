@@ -1,5 +1,5 @@
 require "sinatra"
-require "sinatra/reloader"
+require "sinatra/reloader" if development?
 require "sinatra/content_for"
 require "tilt/erubis"
 
@@ -27,6 +27,36 @@ helpers do
     if !(1..100).cover? name.strip.size
       "Todo name must be between 1 and 100 characters."
     end
+  end
+
+  def list_complete?(list)
+    todos_count(list) > 0 && todos_remaining_count(list) == 0
+  end
+
+  def list_class(list)
+    list_complete?(list) ? "complete" : "new"
+  end
+
+  def todos_remaining_count(list)
+    list[:todos].select { |todo| !todo[:completed] }.size
+  end
+
+  def todos_count(list)
+    list[:todos].size
+  end
+
+  def sort_lists(lists, &block)
+    complete_lists, incomplete_lists = lists.partition { |list| list_complete?(list) }
+
+    incomplete_lists.each { |list| yield list, lists.index(list) }
+    complete_lists.each { |list| yield list, lists.index(list) }
+  end
+
+  def sort_todos(todos, &block)
+    complete_todos, incomplete_todos = todos.partition { |todo| todo[:completed] }
+
+    incomplete_todos.each { |todo| yield todo, todos.index(todo) }
+    complete_todos.each { |todo| yield todo, todos.index(todo) }
   end
 
 end
@@ -137,5 +167,17 @@ post "/lists/:list_id/todos/:id" do
   @list[:todos][todo_id][:completed] = boolean_complete
 
   session[:success] = "The todo has been updated."
+  redirect "/lists/#{@list_id}"
+end
+
+# Complete all todos
+post "/lists/:list_id/complete_all" do
+  @list_id = params[:list_id].to_i
+  @list = session[:lists][@list_id]
+
+  @list[:todos].each do |todo|
+    todo[:completed] = true
+  end
+  session[:success] = "All todos are complete."
   redirect "/lists/#{@list_id}"
 end
