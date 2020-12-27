@@ -2,6 +2,7 @@ require 'sinatra'
 require "sinatra/reloader"
 require "sinatra/content_for"
 require "tilt/erubis"
+require 'redcarpet'
 
 configure do
   enable :sessions
@@ -14,25 +15,39 @@ end
 
 helpers do
 
-  # Get the root path beforehand, may not need and delete later
-  def get_root_path
-    File.expand_path("..", __FILE__)
-  end
-
   # Get the path to the content directory
   def get_content_path
-    get_root_path + "/content_files"
+    File.expand_path("..", __FILE__) + "/content_files"
   end
 
   def get_file_names
-    session[:paths].map do |path|
-      path.split("/")[-1]
-    end
+    session[:paths].map { |path| path.split("/")[-1] }
   end
 
   def exist_file?(file_name)
     get_file_names.include?(file_name)
   end
+
+  def get_path_name(file_name)
+    session[:paths].select { |path| path.match(file_name) }[0]
+  end
+
+  def render_html(plain_text)
+    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
+    markdown.render(plain_text)
+  end
+
+  def load_file(file_name)
+    path_name = get_path_name(file_name)
+    extension_name = File.extname(path_name)
+    if extension_name == '.txt'
+      headers["Content-Type"] = "text/plain"
+      File.read(path_name)
+    else
+      render_html(File.read(path_name))
+    end
+  end
+
 end
 
 # Index page
@@ -42,7 +57,7 @@ get "/" do
   erb :index, layout: :layout
 end
 
-# Add favicon.io path to get redirect this Chrome browser request
+# Add favicon.io path to redirect this Chrome browser request
 get "/favicon.ico" do
   redirect "/"
 end
@@ -52,11 +67,28 @@ get "/:file_name" do
   file_name = params[:file_name]
 
   if exist_file?(file_name)
-    path_name = session[:paths].select { |path| path.match(file_name) }[0]
-    headers["Content-Type"] = "text/plain"
-    File.read(path_name)
+    load_file(file_name)
   else
     session[:error] = "#{file_name} does not exist."
     redirect "/"
   end
+end
+
+# Render edit page for each corresponding document
+get "/:file_name/edit" do
+  @file_name = params[:file_name]
+  @file_content = File.read(get_path_name(@file_name))
+
+  erb :edit, layout: :layout
+end
+
+# Edit post method
+post "/:file_name/edit" do
+  content = params[:edit_file_content]
+  File.write(get_path_name(params[:file_name]), content)
+  session[:success] = "#{params[:file_name]} has been updated."
+
+  # 303 status code if redirect with post, 302 with get method
+  # However, Rack::Test will only set 302 no matter what. use 302 writing test cases
+  redirect "/"
 end

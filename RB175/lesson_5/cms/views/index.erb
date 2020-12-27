@@ -1,10 +1,13 @@
 <h2 class="all-files-header">All files</h2>
 <ul class="files-menu">
   <% @files.each do |file| %>
-    <a href="/<%= file %>">
-      <li class="files-menu-item">
+    <li class="files-menu-item">
+      <a class="file-item" href="/<%= file %>">
         <%= file %>
-      </li>
-    </a>
+      </a>
+      <a class="file-item-edit" href="/<%= file %>/edit">
+        Edit
+      </a>
+    </li>
   <% end %>
 </ul>
