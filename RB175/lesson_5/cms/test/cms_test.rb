@@ -15,7 +15,22 @@ class CmsTest < MiniTest::Test
     Sinatra::Application
   end
 
+  def setup
+    # Create directory of content_files inside test directory if not exist
+    FileUtils.mkdir_p(get_content_path)
+  end
+
+  def create_document(name, content = "")
+    File.open(File.join(get_content_path, name), "w") do |file|
+      file.write(content)
+    end
+  end
+
   def test_index
+    create_document "about.md"
+    create_document "changes.txt"
+    create_document "history.txt"
+
     get "/"
 
     assert_equal 200, last_response.status
@@ -26,6 +41,8 @@ class CmsTest < MiniTest::Test
   end
 
   def test_file_content
+    create_document "history.txt", "1993 - Yukihiro Matsumoto dreams up Ruby."
+
     get "/history.txt"
     
     assert_equal 200, last_response.status
@@ -46,6 +63,8 @@ class CmsTest < MiniTest::Test
   end
 
   def test_markdown_content
+    create_document "about.md", "# Ruby is...\nA dynamic"
+
     get "/about.md"
 
     assert_equal 200, last_response.status
@@ -55,6 +74,8 @@ class CmsTest < MiniTest::Test
   end
 
   def test_edit_get_method
+    create_document "changes.txt"
+
     get "/changes.txt/edit"
 
     assert_equal 200, last_response.status
@@ -63,6 +84,8 @@ class CmsTest < MiniTest::Test
   end
 
   def test_edit_post_method
+    create_document "changes.txt"
+
     post "/changes.txt/edit", edit_file_content: "Changes of Ruby:"
     assert_equal 302, last_response.status
 
@@ -73,5 +96,9 @@ class CmsTest < MiniTest::Test
     get "/changes.txt"
     assert_equal 200, last_response.status
     assert_includes last_response.body, "Changes of Ruby:"
+  end
+
+  def teardown
+    FileUtils.rm_rf(get_content_path)
   end
 end

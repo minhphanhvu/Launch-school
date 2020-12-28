@@ -10,15 +10,26 @@ configure do
 end
 
 before do
-  session[:paths] = Dir[get_content_path + "/*"]
+  # File.join to use for different OS
+  session[:paths] = Dir[File.join(get_content_path, + "*")]
+end
+
+# Get the path to the content directory, if run MiniTest, direct it
+# to another directory inside test directory
+def get_content_path
+  if ENV["RACK_ENV"] != "test"
+    File.expand_path("..", __FILE__) + "/content_files"
+  else
+    File.expand_path("..", __FILE__) + "/test/content_files"
+  end
+end
+
+def render_html(plain_text)
+  markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
+  markdown.render(plain_text)
 end
 
 helpers do
-
-  # Get the path to the content directory
-  def get_content_path
-    File.expand_path("..", __FILE__) + "/content_files"
-  end
 
   def get_file_names
     session[:paths].map { |path| path.split("/")[-1] }
@@ -30,11 +41,6 @@ helpers do
 
   def get_path_name(file_name)
     session[:paths].select { |path| path.match(file_name) }[0]
-  end
-
-  def render_html(plain_text)
-    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
-    markdown.render(plain_text)
   end
 
   def load_file(file_name)
