@@ -98,6 +98,31 @@ class CmsTest < MiniTest::Test
     assert_includes last_response.body, "Changes of Ruby:"
   end
 
+  def test_new 
+    get "/new"
+
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, "<input"
+    assert_includes last_response.body, "action="
+  end
+
+  def test_create
+    post "/create", file_name: "story.txt"
+    assert_equal 302, last_response.status
+    
+    get last_response["Location"]
+    assert_includes last_response.body, "story.txt was created."
+
+    get "/"
+    assert_includes last_response.body, "story.txt"
+  end
+
+  def test_create_empty_name
+    post "/create", file_name: ""
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, "A name is requied."
+  end
+
   def teardown
     FileUtils.rm_rf(get_content_path)
   end

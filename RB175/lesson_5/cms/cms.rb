@@ -49,10 +49,14 @@ helpers do
     if extension_name == '.txt'
       headers["Content-Type"] = "text/plain"
       File.read(path_name)
-    else
+    elsif extension_name == ".md"
       # erb method to tell browser to interpret as HTML coupled with CSS style
       erb render_html(File.read(path_name))
     end
+  end
+
+  def empty?(file_name)
+    file_name.strip == ""
   end
 
 end
@@ -71,6 +75,28 @@ get "/favicon.ico" do
   redirect "/"
 end
 =end
+
+# Render new document page for the user to enter the content
+get "/new" do
+  erb :new, layout: :layout
+end
+
+# Post method to handle new document
+post "/create" do
+  file_name = params[:file_name]
+  if !empty?(file_name)
+    f = File.open(File.join(get_content_path, + "#{file_name}"), "w")
+    f.close()
+    session[:success] = "#{file_name} was created."
+
+    redirect "/"
+  else
+    session[:error] = "A name is requied."
+    status 422
+
+    erb :new, layout: :layout
+  end
+end
 
 # Return the content of a file
 get "/:file_name" do
