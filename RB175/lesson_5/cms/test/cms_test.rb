@@ -123,6 +123,19 @@ class CmsTest < MiniTest::Test
     assert_includes last_response.body, "A name is requied."
   end
 
+  def test_delete
+    create_document "story.md"
+
+    post "/story.md/delete"
+    assert_equal 302, last_response.status
+
+    get last_response["Location"]
+    assert_includes last_response.body, "story.md was deleted."
+
+    get "/"
+    refute_includes last_response.body, "story.md"
+  end
+
   def teardown
     FileUtils.rm_rf(get_content_path)
   end

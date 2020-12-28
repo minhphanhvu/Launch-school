@@ -4,6 +4,9 @@
     <li class="files-menu-item">
       <a class="file-item" href="/<%= file %>"><%= file %></a>
       <a class="file-item-edit" href="/<%= file %>/edit">Edit</a>
+      <form class="file-delete-item" action="/<%= file %>/delete" method="post">
+        <input type="submit" value="Delete">
+      </form>
     </li>
   <% end %>
 </ul>

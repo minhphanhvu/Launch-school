@@ -110,6 +110,16 @@ get "/:file_name" do
   end
 end
 
+# Delete a document with post method - implement javascript later
+post "/:file_name/delete" do
+  file_name = params[:file_name]
+  path_name = get_path_name(file_name)
+  File.delete(path_name)
+  session[:success] = "#{file_name} was deleted."
+
+  redirect "/"
+end
+
 # Render edit page for each corresponding document
 get "/:file_name/edit" do
   @file_name = params[:file_name]
