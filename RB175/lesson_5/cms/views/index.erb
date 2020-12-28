@@ -2,12 +2,8 @@
 <ul class="files-menu">
   <% @files.each do |file| %>
     <li class="files-menu-item">
-      <a class="file-item" href="/<%= file %>">
-        <%= file %>
-      </a>
-      <a class="file-item-edit" href="/<%= file %>/edit">
-        Edit
-      </a>
+      <a class="file-item" href="/<%= file %>"><%= file %></a>
+      <a class="file-item-edit" href="/<%= file %>/edit">Edit</a>
     </li>
   <% end %>
 </ul>

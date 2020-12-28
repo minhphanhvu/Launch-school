@@ -50,7 +50,8 @@ helpers do
       headers["Content-Type"] = "text/plain"
       File.read(path_name)
     else
-      render_html(File.read(path_name))
+      # erb method to tell browser to interpret as HTML coupled with CSS style
+      erb render_html(File.read(path_name))
     end
   end
 
@@ -64,9 +65,12 @@ get "/" do
 end
 
 # Add favicon.io path to redirect this Chrome browser request
+# Image of favicon.ico has been placed in public directory to avoid this get method
+=begin
 get "/favicon.ico" do
   redirect "/"
 end
+=end
 
 # Return the content of a file
 get "/:file_name" do
