@@ -20,5 +20,9 @@ body {
 }
 
 form.file-delete-item {
-    display: inline;
+  display: inline;
+}
+
+.user-status {
+  font-style: italic;
 }

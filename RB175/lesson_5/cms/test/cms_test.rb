@@ -136,6 +136,41 @@ class CmsTest < MiniTest::Test
     refute_includes last_response.body, "story.md"
   end
 
+  def test_get_sign_in
+    get "/users/signin"
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, "<form"
+    assert_includes last_response.body, "<input"
+  end
+
+  def test_sign_in_valid
+    post "/users/signin", username: "admin", password: "secret"
+    assert_equal 302, last_response.status
+
+    get last_response["Location"]
+    assert_includes last_response.body, "Welcome!"
+    assert_includes last_response.body, "Signed in as admin."
+  end
+
+  def test_sign_in_invalid
+    post "/users/signin", username: "ad", password: "sec"
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, "Invalid Credentials"
+  end
+
+  def test_signout
+    post "/users/signin", username: "admin", password: "secret"
+    get last_response["Location"]
+    post "users/signout"
+
+    assert_equal 302, last_response.status
+    get last_response["Location"]
+
+    assert_includes last_response.body, "You have been signed out."
+    refute_includes last_response.body, "Signed in as admin."
+    assert_includes last_response.body, "Sign In"
+  end
+
   def teardown
     FileUtils.rm_rf(get_content_path)
   end

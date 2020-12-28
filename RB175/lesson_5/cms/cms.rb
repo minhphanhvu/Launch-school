@@ -61,6 +61,34 @@ helpers do
 
 end
 
+# Signin page
+get "/users/signin" do
+  erb :signin
+end
+
+# Post method sign in
+post "/users/signin" do
+  username = params[:username]
+  password = params[:password]
+
+  if username == "admin" && password == "secret"
+    session[:success] = "Welcome!"
+    session[:user] = true
+    redirect "/"
+  else
+    session[:error] = "Invalid Credentials"
+    status 422
+    erb :signin
+  end
+end
+
+# Post method sign out
+post "/users/signout" do
+  session[:user] = false
+  session[:success] = "You have been signed out."
+  redirect "/"
+end
+
 # Index page
 get "/" do
   @files = get_file_names

@@ -10,4 +10,17 @@
     </li>
   <% end %>
 </ul>
-<a class="new_document_link" href="/new">New Document</a> 
+<a class="new_document_link" href="/new">New Document</a>
+
+<% if session[:user] %>
+  <div>
+    <form action="/users/signout" method="post">
+      <p class="user-status">
+        Signed in as admin.
+        <input type="submit" value="Sign Out">
+      </p>
+    </form>
+  </div>
+<% else %>
+  <a href="/users/signin">Sign In</a>
+<% end %>
