@@ -26,6 +26,10 @@ class CmsTest < MiniTest::Test
     end
   end
 
+  def session
+    last_request.env["rack.session"]
+  end
+
   def test_index
     create_document "about.md"
     create_document "changes.txt"
@@ -51,15 +55,9 @@ class CmsTest < MiniTest::Test
   end
 
   def test_file_not_found
-    get "/math.txt"
+    get "/non-exist.txt"
     assert_equal 302, last_response.status
-
-    get last_response["Location"]
-    assert_equal 200, last_response.status
-    assert_includes last_response.body, "math.txt does not exist."
-
-    get "/"
-    refute_includes last_response.body, "math.txt does not exist."
+    assert_includes session[:error], "non-exist.txt does not exist."
   end
 
   def test_markdown_content
@@ -88,10 +86,7 @@ class CmsTest < MiniTest::Test
 
     post "/changes.txt/edit", edit_file_content: "Changes of Ruby:"
     assert_equal 302, last_response.status
-
-    get last_response["Location"]
-    assert_equal 200, last_response.status
-    assert_includes last_response.body, "changes.txt has been updated."
+    assert_includes session[:success], "changes.txt has been updated."
 
     get "/changes.txt"
     assert_equal 200, last_response.status
@@ -109,11 +104,10 @@ class CmsTest < MiniTest::Test
   def test_create
     post "/create", file_name: "story.txt"
     assert_equal 302, last_response.status
-    
-    get last_response["Location"]
-    assert_includes last_response.body, "story.txt was created."
+    assert_includes session[:success], "story.txt was created."
 
     get "/"
+    assert_equal 200, last_response.status
     assert_includes last_response.body, "story.txt"
   end
 
@@ -124,16 +118,15 @@ class CmsTest < MiniTest::Test
   end
 
   def test_delete
-    create_document "story.md"
+    create_document "non-exist.md"
 
-    post "/story.md/delete"
+    post "/non-exist.md/delete"
     assert_equal 302, last_response.status
+    assert_includes session[:success], "non-exist.md was deleted."
 
     get last_response["Location"]
-    assert_includes last_response.body, "story.md was deleted."
-
     get "/"
-    refute_includes last_response.body, "story.md"
+    refute_includes last_response.body, "non-exist.md"
   end
 
   def test_get_sign_in
@@ -144,29 +137,29 @@ class CmsTest < MiniTest::Test
   end
 
   def test_sign_in_valid
-    post "/users/signin", username: "admin", password: "secret"
+    post "/users/signin", {username: "admin", password: "secret"}
     assert_equal 302, last_response.status
+    assert_includes session[:success], "Welcome!"
 
     get last_response["Location"]
-    assert_includes last_response.body, "Welcome!"
     assert_includes last_response.body, "Signed in as admin."
   end
 
   def test_sign_in_invalid
-    post "/users/signin", username: "ad", password: "sec"
+    post "/users/signin", {username: "ad", password: "sec"}
     assert_equal 422, last_response.status
     assert_includes last_response.body, "Invalid Credentials"
   end
 
   def test_signout
-    post "/users/signin", username: "admin", password: "secret"
-    get last_response["Location"]
-    post "users/signout"
+    get "/", {}, {"rack.session" => {user: true}}
+    assert_includes last_response.body, "Signed in as admin."
 
+    post "/users/signout"
     assert_equal 302, last_response.status
-    get last_response["Location"]
+    assert_includes session[:success], "You have been signed out."
 
-    assert_includes last_response.body, "You have been signed out."
+    get last_response["Location"]
     refute_includes last_response.body, "Signed in as admin."
     assert_includes last_response.body, "Sign In"
   end

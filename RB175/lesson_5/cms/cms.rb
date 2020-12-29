@@ -96,14 +96,6 @@ get "/" do
   erb :index, layout: :layout
 end
 
-# Add favicon.io path to redirect this Chrome browser request
-# Image of favicon.ico has been placed in public directory to avoid this get method
-=begin
-get "/favicon.ico" do
-  redirect "/"
-end
-=end
-
 # Render new document page for the user to enter the content
 get "/new" do
   erb :new, layout: :layout
