@@ -1,6 +1,5 @@
 require 'sinatra'
 require "sinatra/reloader"
-require "sinatra/content_for"
 require "tilt/erubis"
 require 'redcarpet'
 require 'yaml'
@@ -101,6 +100,7 @@ post "/users/signin" do
   if users_info.key?(username) && bcrypt_authentication?(username, password)
     session[:success] = "Welcome!"
     session[:user] = true
+
     redirect "/"
   else
     session[:error] = "Invalid Credentials"
@@ -113,6 +113,7 @@ end
 post "/users/signout" do
   session[:user] = false
   session[:success] = "You have been signed out."
+
   redirect "/"
 end
 
@@ -158,6 +159,7 @@ get "/:file_name" do
     load_file(file_name)
   else
     session[:error] = "#{file_name} does not exist."
+
     redirect "/"
   end
 end
