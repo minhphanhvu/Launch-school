@@ -30,6 +30,10 @@ class CmsTest < MiniTest::Test
     last_request.env["rack.session"]
   end
 
+  def admin_session
+    { "rack.session" => { user: true }}
+  end
+
   def test_index
     create_document "about.md"
     create_document "changes.txt"
@@ -74,7 +78,7 @@ class CmsTest < MiniTest::Test
   def test_edit_get_method
     create_document "changes.txt"
 
-    get "/changes.txt/edit"
+    get "/changes.txt/edit", {}, admin_session
 
     assert_equal 200, last_response.status
     assert_includes last_response.body, "<textarea id"
@@ -84,7 +88,7 @@ class CmsTest < MiniTest::Test
   def test_edit_post_method
     create_document "changes.txt"
 
-    post "/changes.txt/edit", edit_file_content: "Changes of Ruby:"
+    post "/changes.txt/edit", {edit_file_content: "Changes of Ruby:"}, admin_session
     assert_equal 302, last_response.status
     assert_includes session[:success], "changes.txt has been updated."
 
@@ -94,15 +98,14 @@ class CmsTest < MiniTest::Test
   end
 
   def test_new 
-    get "/new"
-
+    get "/new", {}, admin_session
     assert_equal 200, last_response.status
     assert_includes last_response.body, "<input"
     assert_includes last_response.body, "action="
   end
 
   def test_create
-    post "/create", file_name: "story.txt"
+    post "/create", {file_name: "story.txt"}, admin_session
     assert_equal 302, last_response.status
     assert_includes session[:success], "story.txt was created."
 
@@ -112,7 +115,7 @@ class CmsTest < MiniTest::Test
   end
 
   def test_create_empty_name
-    post "/create", file_name: ""
+    post "/create", {file_name: ""}, admin_session
     assert_equal 422, last_response.status
     assert_includes last_response.body, "A name is requied."
   end
@@ -120,7 +123,7 @@ class CmsTest < MiniTest::Test
   def test_delete
     create_document "non-exist.md"
 
-    post "/non-exist.md/delete"
+    post "/non-exist.md/delete", {}, admin_session
     assert_equal 302, last_response.status
     assert_includes session[:success], "non-exist.md was deleted."
 
@@ -137,7 +140,7 @@ class CmsTest < MiniTest::Test
   end
 
   def test_sign_in_valid
-    post "/users/signin", {username: "admin", password: "secret"}
+    post "/users/signin", { username: "admin", password: "secret" }
     assert_equal 302, last_response.status
     assert_includes session[:success], "Welcome!"
 
@@ -152,7 +155,7 @@ class CmsTest < MiniTest::Test
   end
 
   def test_signout
-    get "/", {}, {"rack.session" => {user: true}}
+    get "/", {}, admin_session
     assert_includes last_response.body, "Signed in as admin."
 
     post "/users/signout"

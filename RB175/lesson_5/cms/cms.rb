@@ -59,6 +59,13 @@ helpers do
     file_name.strip == ""
   end
 
+  def authenticate_user
+    if session[:user] != true
+      session[:error] = "You must be signed in to do that."
+      redirect "/"
+    end
+  end
+
 end
 
 # Signin page
@@ -98,12 +105,17 @@ end
 
 # Render new document page for the user to enter the content
 get "/new" do
+  authenticate_user
+
   erb :new, layout: :layout
 end
 
 # Post method to handle new document
 post "/create" do
+  authenticate_user
+
   file_name = params[:file_name]
+
   if !empty?(file_name)
     f = File.open(File.join(get_content_path, + "#{file_name}"), "w")
     f.close()
@@ -132,6 +144,8 @@ end
 
 # Delete a document with post method - implement javascript later
 post "/:file_name/delete" do
+  authenticate_user
+
   file_name = params[:file_name]
   path_name = get_path_name(file_name)
   File.delete(path_name)
@@ -142,6 +156,8 @@ end
 
 # Render edit page for each corresponding document
 get "/:file_name/edit" do
+  authenticate_user
+
   @file_name = params[:file_name]
   @file_content = File.read(get_path_name(@file_name))
 
@@ -150,6 +166,8 @@ end
 
 # Edit post method
 post "/:file_name/edit" do
+  authenticate_user
+
   content = params[:edit_file_content]
   File.write(get_path_name(params[:file_name]), content)
   session[:success] = "#{params[:file_name]} has been updated."
