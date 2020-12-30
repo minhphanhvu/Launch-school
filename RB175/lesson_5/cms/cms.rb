@@ -30,61 +30,74 @@ def render_html(plain_text)
   markdown.render(plain_text)
 end
 
-helpers do
-
-  def get_file_names
-    session[:paths].map { |path| path.split("/")[-1] }
+def get_extensions
+  if ENV["RACK_ENV"] != "test"
+    YAML.load_file(File.expand_path("..", __FILE__) + "/admin/extensions.yml")
+  else
+    YAML.load_file(File.expand_path("..", __FILE__) + "/test/extensions.yml")
   end
+end
 
-  def exist_file?(file_name)
-    get_file_names.include?(file_name)
+def extension_valid?(file_name)
+  extension = File.extname(file_name)
+  get_extensions[extension] == true
+end
+
+def get_file_names
+  session[:paths].map { |path| path.split("/")[-1] }
+end
+
+def exist_file?(file_name)
+  get_file_names.include?(file_name)
+end
+
+def get_path_name(file_name)
+  session[:paths].select { |path| path.match(file_name) }[0]
+end
+
+def load_file(file_name)
+  path_name = get_path_name(file_name)
+  extension_name = File.extname(path_name)
+  if extension_name == '.txt'
+    headers["Content-Type"] = "text/plain"
+    File.read(path_name)
+  elsif extension_name == ".md"
+    # erb method to tell browser to interpret as HTML coupled with CSS style
+    erb render_html(File.read(path_name))
   end
+end
 
-  def get_path_name(file_name)
-    session[:paths].select { |path| path.match(file_name) }[0]
+def empty?(file_name)
+  file_name.strip == ""
+end
+
+def authenticate_user
+  if session[:user] != true
+    session[:error] = "You must be signed in to do that."
+    redirect "/"
   end
+end
 
-  def load_file(file_name)
-    path_name = get_path_name(file_name)
-    extension_name = File.extname(path_name)
-    if extension_name == '.txt'
-      headers["Content-Type"] = "text/plain"
-      File.read(path_name)
-    elsif extension_name == ".md"
-      # erb method to tell browser to interpret as HTML coupled with CSS style
-      erb render_html(File.read(path_name))
-    end
+def users_info
+  if ENV["RACK_ENV"] != "test"
+    path = File.expand_path("..", __FILE__) + "/admin"
+  else
+    path = File.expand_path("..", __FILE__) + "/test"
   end
+  YAML.load_file(path + "/users.yml")
+end
 
-  def empty?(file_name)
-    file_name.strip == ""
+def bcrypt_authentication?(username, password)
+  encrypted_password = users_info[username]
+  if BCrypt::Password.new(encrypted_password) == password
+    true
+  else
+    false
   end
+end
 
-  def authenticate_user
-    if session[:user] != true
-      session[:error] = "You must be signed in to do that."
-      redirect "/"
-    end
-  end
-
-  def users_info
-    if ENV["RACK_ENV"] != "test"
-      path = File.expand_path("..", __FILE__) + "/admin"
-    else
-      path = File.expand_path("..", __FILE__) + "/test"
-    end
-    YAML.load_file(path + "/users.yml")
-  end
-
-  def bcrypt_authentication?(username, password)
-    encrypted_password = users_info[username]
-    if BCrypt::Password.new(encrypted_password) == password
-      true
-    else
-      false
-    end
-  end
-
+get "/extensions" do
+  get_extensions[0]
 end
 
 # Signin page
@@ -137,17 +150,22 @@ post "/create" do
 
   file_name = params[:file_name]
 
-  if !empty?(file_name)
+  if empty?(file_name)
+    session[:error] = "A name is requied."
+    status 422
+
+    erb :new, layout: :layout
+  elsif !extension_valid?(file_name)
+    session[:error] = "Extension or file name is not supported."
+    status 422
+
+    erb :new, layout: :layout
+  else
     f = File.open(File.join(get_content_path, + "#{file_name}"), "w")
     f.close()
     session[:success] = "#{file_name} was created."
 
     redirect "/"
-  else
-    session[:error] = "A name is requied."
-    status 422
-
-    erb :new, layout: :layout
   end
 end
 

@@ -120,6 +120,12 @@ class CmsTest < MiniTest::Test
     assert_includes last_response.body, "A name is requied."
   end
 
+  def test_create_invalid_extension
+    post "/create", {file_name: "story"}, admin_session
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, "Extension or file name is not supported."
+  end
+
   def test_delete
     create_document "non-exist.md"
 

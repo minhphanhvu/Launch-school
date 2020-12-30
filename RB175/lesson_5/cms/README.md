@@ -1,4 +1,6 @@
-File-based CMS project
+File-based CMS project. 
+
+Extentions allowed: .md, .txt. Extensions can be edited in admin directory yaml file.
 
 # Run 'bundle install' for the gems to load
 
