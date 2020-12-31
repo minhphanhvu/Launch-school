@@ -96,9 +96,8 @@ def bcrypt_authentication?(username, password)
   end
 end
 
-get "/extensions" do
-  get_extensions[0]
-end
+# All URL pathpatterns here.
+
 
 # Signin page
 get "/users/signin" do
