@@ -87,6 +87,15 @@ def users_info
   YAML.load_file(path + "/users.yml")
 end
 
+def add_user(yaml_data)
+  if ENV["RACK_ENV"] != "test"
+    path = File.expand_path("..", __FILE__) + "/admin/users.yml"
+  else
+    path = File.expand_path("..", __FILE__) + "/test/users.yml"
+  end
+  File.open(path, 'w') { |f| YAML.dump(yaml_data, f) } 
+end
+
 def bcrypt_authentication?(username, password)
   encrypted_password = users_info[username]
   if BCrypt::Password.new(encrypted_password) == password
@@ -98,6 +107,26 @@ end
 
 # All URL pathpatterns here.
 
+
+# Return signup page
+get "/users/signup" do
+  erb :signup, layout: :layout
+end
+
+# Sign a new user up
+post "/users/signup" do
+  username = params[:username]
+  # Don't ask me how to_s works here, I shoot randomly at this
+  password = BCrypt::Password.create(params[:password]).to_s
+
+  yaml_data = users_info
+  yaml_data[username] = password
+
+  add_user(yaml_data)
+  session[:user] = true
+
+  redirect "/"
+end
 
 # Signin page
 get "/users/signin" do
