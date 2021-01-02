@@ -1,4 +1,4 @@
-class Palindromes 
+class Palindromes
   attr_reader :max, :min, :hash
 
   def initialize(max_factor:, min_factor: 1)
@@ -8,9 +8,11 @@ class Palindromes
   end
 
   def generate
-    (@min..@max).to_a.repeated_combination(2).to_a.select do |num1, num2|
+    products = (@min..@max).to_a.repeated_combination(2).to_a.select do\
+       |num1, num2|
       palindrome?(num1, num2)
-    end.each { |product| hash[product.reduce(:*)] << product }
+    end
+    products.each { |product| hash[product.reduce(:*)] << product }
   end
 
   def smallest
@@ -20,6 +22,7 @@ class Palindromes
   def largest
     Palindrome.new(hash.max[0], hash.max[1])
   end
+
   private
 
   def palindrome?(num1, num2)
