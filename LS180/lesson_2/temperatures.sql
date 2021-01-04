@@ -38,5 +38,8 @@ ALTER TABLE temperatures RENAME TO weather;
 
 -- CLI: pg_dump -d temperature -t weather --inserts > dump.sql
 -- temperature: database_name; weather: table_name; dump.sql: sql file_name
--- list every thing when dumping data
-SELECT * FROM weather;
+
+-- inspect table schema
+\d weather
+-- list some to inspect data when dumping data
+SELECT * FROM weather LIMIT 5;
