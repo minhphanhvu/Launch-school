@@ -75,3 +75,65 @@ ALTER COLUMN spectral_type TYPE spectral_type_enum USING spectral_type::spectral
 -- print out the tables some rows
 SELECT * FROM stars LIMIT 5;
 SELECT * FROM planets LIMIT 5;
+
+-- modify mass column to decimal
+ALTER TABLE planets
+ALTER COLUMN mass TYPE numeric;
+
+-- add not null and constraint to mass
+ALTER TABLE planets
+ALTER COLUMN mass SET NOT NULL,
+ADD CHECK (mass > 0);
+
+-- add not null to designation
+ALTER TABLE planets
+ALTER COLUMN designation SET NOT NULL;
+
+-- add semi_major_axis
+ALTER TABLE planets
+ADD COLUMN semi_major_axis numeric NOT NULL;
+
+-- furthuer exploration -- drop column semi_major_axis
+ALTER TABLE planets
+DROP COLUMN semi_major_axis;
+
+DELETE FROM stars; -- delete everything from the stars table
+-- Restart the sequence -- only do this with deleting everything from the table
+ALTER SEQUENCE stars_id_seq RESTART WITH 1;
+INSERT INTO stars (name, distance, spectral_type, companions)
+           VALUES ('Alpha Centauri B', 4.37, 'K', 3);
+INSERT INTO stars (name, distance, spectral_type, companions)
+           VALUES ('Epsilon Eridani', 10.5, 'K', 0);
+
+-- add data to planets
+INSERT INTO planets (designation, mass, star_id)
+           VALUES ('b', 0.0036, 1); -- check star_id; see note below
+INSERT INTO planets (designation, mass, star_id)
+           VALUES ('c', 0.1, 2); -- check star_id; see note below
+
+-- add semi_major_axis back without not null
+ALTER TABLE planets
+ADD COLUMN semi_major_axis numeric;
+
+-- add semi_major_axis data
+UPDATE planets
+SET semi_major_axis = 0.04 WHERE star_id = 1;
+UPDATE planets
+SET semi_major_axis = 40 WHERE star_id = 2;
+
+-- give not null constraint back
+ALTER TABLE planets
+ALTER COLUMN semi_major_axis SET NOT NULL;
+
+
+-- add moons table
+CREATE TABLE moons (
+    id serial PRIMARY KEY,
+    designation integer NOT NULL CHECK (designation > 1),
+    semi_major_axis numeric CHECK (semi_major_axis > 0.0),
+    mass numeric CHECK (mass > 0.0),
+    planet_id integer NOT NULL REFERENCES planets(id)
+);
+
+-- dump database
+-- pg_dump --inserts extrasolar > extrasolar.dump.sql
