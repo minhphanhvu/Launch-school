@@ -18,8 +18,15 @@ body {
   padding-bottom: 2px;
   padding-left: 10px;
 }
+.form {
+  display: inline-block;
+}
 
 form.file-delete-item {
+  display: inline;
+}
+
+form.file-duplicate-item {
   display: inline;
 }
 

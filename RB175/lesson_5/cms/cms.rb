@@ -210,6 +210,20 @@ get "/:file_name" do
   end
 end
 
+# Duplicate document
+post "/:file_name/duplicate" do
+  file_name = params[:file_name]
+  dup_name = file_name.gsub(".", "_dup.")
+  authenticate_user
+
+  old_path = File.join(get_content_path, file_name)
+  new_path = File.join(get_content_path, dup_name)
+  File.open(new_path, "w+") { |f| f.write(File.read(old_path)) }
+  session[:success] = "#{file_name} is successfully duplicated."
+
+  redirect "/"
+end
+
 # Delete a document with post method - implement javascript later
 post "/:file_name/delete" do
   authenticate_user

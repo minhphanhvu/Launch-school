@@ -203,6 +203,17 @@ class CmsTest < MiniTest::Test
     assert_equal true, session[:user]
   end
 
+  def test_duplicate
+    create_document "about.md"
+
+    post "/about.md/duplicate", {}, admin_session
+    assert_equal 302, last_response.status
+    assert_includes session[:success], "about.md is successfully duplicated."
+
+    get last_response["Location"]
+    assert_includes last_response.body, "about.md is successfully duplicated."
+  end
+
   def teardown
     FileUtils.rm_rf(get_content_path)
     delete_yaml_file
