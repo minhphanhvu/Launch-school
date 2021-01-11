@@ -11,3 +11,7 @@ Run command 'rake run' or 'bundle exec rake run' to start the server.
 Alternative: Run 'bundle exec ruby cms.rb' to run App.
 
 # Local host at port 4567: localhost:4567
+
+To add jQuery: install npm
+
+Run 'npm install jquery'
