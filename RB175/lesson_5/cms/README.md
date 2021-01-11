@@ -15,3 +15,5 @@ Alternative: Run 'bundle exec ruby cms.rb' to run App.
 To add jQuery: install npm
 
 Run 'npm install jquery'
+
+Or link with jQuery CDN like in the project
