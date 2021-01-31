@@ -35,3 +35,25 @@ SELECT bidders.name
 FROM bidders 
 WHERE EXISTS (SELECT 1 FROM bids WHERE bids.bidder_id = bidders.id);
 
+SELECT MAX(bid_counts.count) FROM
+  (SELECT COUNT(bidder_id) FROM bids GROUP BY bidder_id) AS bid_counts;
+
+SELECT items.name, COUNT(bids.item_id) 
+FROM items LEFT JOIN bids ON items.id = bids.item_id GROUP BY name ORDER BY name DESC;
+
+SELECT name,
+       (SELECT COUNT(item_id) FROM bids WHERE item_id = items.id)
+FROM items;
+
+SELECT id FROM items WHERE ROW('Painting', 100.00, 250.00) = ROW(name, initial_price, sales_price);
+
+EXPLAIN SELECT name FROM bidders
+WHERE EXISTS (SELECT 1 FROM bids WHERE bids.bidder_id = bidders.id);
+
+EXPLAIN ANALYZE SELECT MAX(bid_counts.count) FROM
+  (SELECT COUNT(bidder_id) FROM bids GROUP BY bidder_id) AS bid_counts;
+
+EXPLAIN ANALYZE SELECT COUNT(bidder_id) AS max_bid FROM bids
+  GROUP BY bidder_id
+  ORDER BY max_bid DESC
+  LIMIT 1;
