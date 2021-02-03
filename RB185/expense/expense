@@ -1,0 +1,62 @@
+#! /usr/bin/env ruby
+
+require 'pg'
+
+OPTIONS = ["add", "clear", "list", "delete", "search"]
+option = ARGV[0]
+CONNECTION = PG.connect(dbname: "expenses")
+
+def list_of_commands
+  ["add AMOUNT MEMO [DATE] - record a new expense",
+   "clear - delete all expenses",
+   "list - list all expenses",
+   "delete NUMBER - remove expense with id NUMBER",
+   "search QUERY - list expenses with a matching memo field"
+  ]
+end
+
+def display_help
+  puts <<~HELP
+    "An expense recording system"
+
+
+    "Commands:"
+
+    HELP
+  puts list_of_commands.join("\n")
+end
+
+def list_expenses
+  result = CONNECTION.exec("SELECT * FROM expenses ORDER BY created_on ASC;")
+  result.each do |tuple|
+    columns = [
+      tuple["id"].rjust(3),
+      tuple["created_on"].rjust(26),
+      tuple["amount"].rjust(7),
+      tuple["memo"]
+    ]
+
+    puts columns.join(" | ")
+  end
+end
+
+def add_expense(amount, memo)
+  date = Time.now()
+  CONNECTION.exec_params("INSERT INTO expenses (amount, memo, created_on) VALUES ($1, $2, $3);", [amount, memo, date]).values
+end 
+
+def handle_add_expense
+  if ARGV.size != 3
+    puts "You must provide an amount and memo."
+  else
+    add_expense(ARGV[1], ARGV[2])
+  end
+end
+
+if option.nil?
+  display_help
+elsif option == "list"
+  list_expenses
+elsif option == "add"
+  handle_add_expense
+end
