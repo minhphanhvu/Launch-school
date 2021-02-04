@@ -2,61 +2,156 @@
 
 require 'pg'
 
-OPTIONS = ["add", "clear", "list", "delete", "search"]
-option = ARGV[0]
-CONNECTION = PG.connect(dbname: "expenses")
+require 'io/console'
 
-def list_of_commands
-  ["add AMOUNT MEMO [DATE] - record a new expense",
-   "clear - delete all expenses",
-   "list - list all expenses",
-   "delete NUMBER - remove expense with id NUMBER",
-   "search QUERY - list expenses with a matching memo field"
-  ]
+class ExpenseData
+  def initialize
+    @connection = PG.connect(dbname: 'expenses')
+    setup_schema
+  end
+
+  def list_expenses
+    result = @connection.exec("SELECT * FROM expenses ORDER BY created_on ASC;")
+    total = @connection.exec("SELECT SUM(amount) FROM expenses;")
+    display_expenses(result, total.field_values("SUM")[0])
+  end
+
+  def handle_add_expense(amount, memo)
+    if amount.nil? || memo.nil?
+      puts "You must provide an amount and memo."
+    else
+      add_expense(amount, memo)
+    end
+  end
+
+  def search(item)
+    if item.nil?
+      puts "You must provide a search name."
+    else
+      query = "SELECT * FROM expenses WHERE memo ILIKE $1"
+      result = @connection.exec_params(query, ["%#{item}%"])
+      total = @connection.exec_params("SELECT SUM(amount) FROM expenses WHERE memo ILIKE $1", ["%#{item}%"])
+      display_expenses(result, total.field_values("SUM")[0])
+    end
+  end
+
+  def delete(id)
+    if id.nil?
+      puts "You must provide a proper id."
+    else
+      query_1 = "SELECT 1 FROM expenses WHERE EXISTS (SELECT 1 FROM expenses WHERE id=$1)"
+      queried_id = @connection.exec_params(query_1, [id])
+      if queried_id.ntuples == 0
+        puts "There is no expense with the id '#{id}'."
+      else
+        query_2 = "DELETE FROM expenses WHERE id=$1"
+        deleted_expense = @connection.exec_params("SELECT * FROM expenses WHERE id=$1", [id])
+        @connection.exec_params(query_2, [id])
+        puts "The following expense has been deleted:"
+        display_expenses(deleted_expense)
+      end
+    end
+  end
+
+  def delete_all_expenses
+    @connection.exec("DELETE FROM expenses")
+    puts "All expenses have been deleted."
+  end
+
+  private
+
+  def add_expense(amount, memo)
+    date = Time.now()
+    query = "INSERT INTO expenses (amount, memo, created_on) VALUES ($1, $2, $3);"
+    @connection.exec_params(query, [amount, memo, date])
+  end
+
+  def display_expenses(result, total)
+    result.each do |tuple|
+      columns = [
+        tuple["id"].rjust(3),
+        tuple["created_on"].rjust(26),
+        tuple["amount"].rjust(7),
+        tuple["memo"]
+      ]
+  
+      puts columns.join(" | ")
+    end
+    if !total.nil?
+      puts "-"*60
+      puts "Total" + " "*32 + total
+    end
+  end
+
+  def setup_schema
+    result = @connection.exec <<~SQL
+      SELECT COUNT(*) FROM information_schema.tables
+      WHERE table_schema = 'public' AND table_name = 'expenses';
+    SQL
+
+    if result[0]["count"] == "0"
+      @connection.exec <<~SQL
+        CREATE TABLE expenses (
+          id serial PRIMARY KEY,
+          amount numeric(6,2) NOT NULL CHECK (amount >= 0.01),
+          memo text NOT NULL,
+          created_on date NOT NULL
+        );
+      SQL
+    end
+  end
 end
 
-def display_help
-  puts <<~HELP
-    "An expense recording system"
+class CLI
+  def initialize
+    @application = ExpenseData.new
+  end
 
+  def run(arguments)
+    command = arguments.shift
+    case command
+    when "list"
+      @application.list_expenses
+    when "add"
+      amount = arguments[0]
+      memo = arguments[1]
+      @application.handle_add_expense(amount, memo)
+    when "search"
+      item = arguments[0]
+      @application.search(item)
+    when "delete"
+      id = arguments[0]
+      @application.delete(id)
+    when "clear"
+      puts "This will remove all expenses. Are you sure? (y/n)"
+      answer = $stdin.getch
+      @application.delete_all_expenses if answer == "y"
+    else
+      display_help
+    end
+  end
+  
+  def display_help
+    puts <<~HELP
+      "An expense recording system"
+  
+  
+      "Commands:"
+  
+      HELP
+    puts list_of_commands.join("\n")
+  end
 
-    "Commands:"
+  private
 
-    HELP
-  puts list_of_commands.join("\n")
-end
-
-def list_expenses
-  result = CONNECTION.exec("SELECT * FROM expenses ORDER BY created_on ASC;")
-  result.each do |tuple|
-    columns = [
-      tuple["id"].rjust(3),
-      tuple["created_on"].rjust(26),
-      tuple["amount"].rjust(7),
-      tuple["memo"]
+  def list_of_commands
+    ["add AMOUNT MEMO [DATE] - record a new expense",
+     "clear - delete all expenses",
+     "list - list all expenses",
+     "delete NUMBER - remove expense with id NUMBER",
+     "search QUERY - list expenses with a matching memo field"
     ]
-
-    puts columns.join(" | ")
   end
 end
 
-def add_expense(amount, memo)
-  date = Time.now()
-  CONNECTION.exec_params("INSERT INTO expenses (amount, memo, created_on) VALUES ($1, $2, $3);", [amount, memo, date]).values
-end 
-
-def handle_add_expense
-  if ARGV.size != 3
-    puts "You must provide an amount and memo."
-  else
-    add_expense(ARGV[1], ARGV[2])
-  end
-end
-
-if option.nil?
-  display_help
-elsif option == "list"
-  list_expenses
-elsif option == "add"
-  handle_add_expense
-end
+CLI.new.run(ARGV)
