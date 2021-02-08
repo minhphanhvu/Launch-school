@@ -1,0 +1,21 @@
+body, main, figure, figcaption, img {
+  margin: 0;
+  padding: 0;
+}
+
+figure {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 50%;
+  margin: 0px 0px;
+  padding: 50px 0px;
+}
+
+img {
+  height: 100%;
+  width: 100%;
+}
+
+figcaption {
+  text-align: center;
+}
