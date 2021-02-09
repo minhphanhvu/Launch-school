@@ -1,0 +1,22 @@
+html, body {
+  font: 28px Helvetica, Arial, sans-serif;
+  background: #ffffff;
+  width: 500px;
+}
+
+dl {
+  display: inline;
+}
+
+dt {
+  display: inline;
+}
+
+dd {
+  display: inline;
+  margin: 0;
+}
+
+.indent {
+  text-indent: 50px;
+}
