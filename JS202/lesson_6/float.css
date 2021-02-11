@@ -1,0 +1,43 @@
+body, section, article, aside {
+  margin: 0 auto;
+  padding: 0;
+  width: 1000px;
+}
+
+body {
+  background-color: grey;
+}
+
+
+article {
+  box-sizing: border-box;
+  width: 70%;
+  float: left;
+  padding: 1rem;
+}
+
+section {
+  max-width: 1000px;
+  background-color: white;
+  margin :0;
+  width: 750px;
+  overflow: hidden;
+}
+
+article {
+  background-color: #ffc;
+  width: 500px;
+}
+
+aside {
+  box-sizing: border-box;
+  padding: 1rem;
+  float: none;
+  overflow: hidden;
+  background-color: #cfc;
+  width: 250px;
+}
+
+footer {
+  clear: both;
+}
