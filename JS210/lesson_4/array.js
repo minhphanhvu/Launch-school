@@ -154,19 +154,51 @@ console.log(array);                      // [1, 2, 3]
 
 // Array Shift and Unshift
 
+function shift(arr) {
+  let result;
 
+  if (arr.length !== 0) {
+    result = arr.splice(0, 1).pop();
+  }
+
+  return result;
+}
+
+function unshift(array, ...args) {
+  for (let i = 0; i < args.length; i += 1) {
+    array.splice(i , 0, args[i]);
+  }
+
+  return array.length;
+}
 
 console.log('Array Shift and Unshift');
-shift([1, 2, 3]);                // 1
-shift([]);                       // undefined
-shift([[1, 2, 3], 4, 5]);        // [1, 2, 3]
+console.log(shift([1, 2, 3]));                // 1
+console.log(shift([]));                       // undefined
+console.log(shift([[1, 2, 3], 4, 5]));        // [1, 2, 3]
 
-unshift([1, 2, 3], 5, 6);        // 5
-unshift([1, 2, 3]);              // 3
-unshift([4, 5], [1, 2, 3]);      // 3
+console.log(unshift([1, 2, 3], 5, 6));        // 5
+console.log(unshift([1, 2, 3]));              // 3
+console.log(unshift([4, 5], [1, 2, 3]));      // 3
 
 const testArray = [1, 2, 3];
-shift(testArray);                // 1
-testArray;                       // [2, 3]
-unshift(testArray, 5);           // 3
-testArray;                       // [5, 2, 3]
+console.log(shift(testArray));                // 1
+console.log(testArray);                       // [2, 3]
+console.log(unshift(testArray, 5));           // 3
+console.log(testArray);                       // [5, 2, 3]
+
+// Array Splice and Slice
+
+function slice(array, begin, end) {
+  
+}
+
+console.log('Array Slice');
+console.log(slice([1, 2, 3], 1, 2));               // [2]
+console.log(slice([1, 2, 3], 2, 0));               // []
+console.log(slice([1, 2, 3], 5, 1));               // []
+console.log(slice([1, 2, 3], 0, 5));               // [1, 2, 3]
+
+const arr1 = [1, 2, 3];
+console.log(slice(arr1, 1, 3));                     // [2, 3]
+console.log(arr1);                                  // [1, 2, 3]
