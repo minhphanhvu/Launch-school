@@ -92,3 +92,32 @@ console.log('Letter Swap');
 console.log(swap('Oh what a wonderful day it is'));  // "hO thaw a londerfuw yad ti si"
 console.log(swap('Abcde'));                          // "ebcdA"
 console.log(swap('a'));                              // "a"
+
+// Letter Counter Part 1
+
+function wordSizes(str) {
+  if (str.length === 0) {
+    return {};
+  }
+
+  const newObj = {};
+  let key = '';
+
+  str.split(' ').forEach(word => {
+    key = String(word.length);
+
+    if (newObj.hasOwnProperty(key)) {
+      newObj[key] += 1;
+    } else {
+      newObj[key] = 1;
+    }
+  });
+
+  return newObj;
+}
+
+console.log('Letter Counter Part 1');
+console.log(wordSizes('Four score and seven.'));                       // { "3": 1, "4": 1, "5": 1, "6": 1 }
+console.log(wordSizes('Hey diddle diddle, the cat and the fiddle!'));  // { "3": 5, "6": 1, "7": 2 }
+console.log(wordSizes("What's up doc?"));                              // { "2": 1, "4": 1, "6": 1 }
+console.log(wordSizes(''));                                            // {}
