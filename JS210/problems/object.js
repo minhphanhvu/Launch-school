@@ -78,26 +78,36 @@ console.log(myArray.length);
 
 // Array Object Part 2
 
-console.log('Array Object Part 2')
-const myArray = [5, 5];
-myArray[-1] = 5;
-myArray[-2] = 5;
+// console.log('Array Object Part 2')
+// const myArray = [5, 5];
+// myArray[-1] = 5;
+// myArray[-2] = 5;
 
-function average(array) {
-  let sum = 0;
+// function average(array) {
+//   let sum = 0;
 
-  for (let i = -2; i < array.length; i += 1) {
-    sum += array[i];
-  }
+//   for (let i = -2; i < array.length; i += 1) {
+//     sum += array[i];
+//   }
 
-  return sum / array.length;
-}
+//   return sum / array.length;
+// }
 
-average(myArray);
+// average(myArray);
 
 // What's my Bonus
 
-console.log('What''s my Bonus');
+console.log("What's my Bonus");
 function calculateBonus() {
   return arguments[1] ? arguments[0] / 2 : 0;
 }
+
+// The End is Near But Not Here
+
+console.log('The End is Near But Not Here---');
+function penultimate(string) {
+  return string.split(' ').slice(-2, -1)[0];
+}
+
+console.log(penultimate('last word'));                    // expected: "last"
+console.log(penultimate('Launch School is great!'));      // expected: "is"
