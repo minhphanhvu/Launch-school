@@ -103,3 +103,64 @@ function interleave(arr1, arr2) {
 
 console.log('Combine Two Lists');
 console.log(interleave([1, 2, 3], ['a', 'b', 'c']));    // [1, "a", 2, "b", 3, "c"]
+
+// Multiplicative Average
+
+function showMultiplicativeAverage(arr) {
+  let result = arr.reduce( (multiplication, currentValue) => multiplication * currentValue, 1 )/arr.length;
+  return result.toFixed(3);
+}
+
+console.log('Multiplicative Average');
+console.log(showMultiplicativeAverage([3, 5]));                   // "7.500"
+console.log(showMultiplicativeAverage([2, 5, 7, 11, 13, 17]));    // "28361.667"
+
+// Multiply Lists
+
+function multiplyList(numbers1, numbers2) {
+  const result = [];
+
+  for (let i = 0; i < numbers1.length; i += 1) {
+    result.push(numbers1[i] * numbers2[i]);
+  }
+
+  return result;
+}
+
+console.log('Multiply Lists');
+console.log(multiplyList([3, 5, 7], [9, 10, 11]));    // [27, 50, 77]
+
+// Digit List
+
+function digitList(num) {
+  let numArr = String(num).split('');
+  let result = [];
+
+  for (let i = 0; i < numArr.length; i++) {
+    result.push(Number(numArr[i]));
+  }
+
+  return result;
+}
+
+console.log('Digist List');
+console.log(digitList(12345));       // [1, 2, 3, 4, 5]
+console.log(digitList(7));           // [7]
+console.log(digitList(375290));      // [3, 7, 5, 2, 9, 0]
+console.log(digitList(444));         // [4, 4, 4]
+
+// Array Average
+
+function average(numbers) {
+  let sum = 0;
+
+  for (let i = 0; i < numbers.length; i += 1) {
+    sum += numbers[i];
+  }
+
+  return Math.floor(sum / numbers.length);
+}
+
+console.log('Array Average');
+console.log(average([1, 5, 87, 45, 8, 8]));       // 25
+console.log(average([9, 47, 23, 95, 16, 52]));    // 40
