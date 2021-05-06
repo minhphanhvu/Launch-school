@@ -1,10 +1,25 @@
 var $ol = document.querySelector("ol");
 
-function outputResult(message) {
+function outputResult(message, describe=false) {
   var $li = document.createElement("li");
   $li.innerText = message;
   $ol.appendChild($li);
+  if (describe) {
+    $li.setAttribute("class", "describe");
+  }
   return $li;
+}
+
+var describe = function (message, describe=true) {
+  return outputResult(message, describe)
+}
+
+var logger = function (log) {
+  if (typeof log === 'function') {
+    console.log(log())
+  } else {
+    console.log(log)
+  }
 }
 
 function test(message, assertion) {
@@ -18,14 +33,6 @@ function test(message, assertion) {
     passed = false;
   }
   $msg.setAttribute("class", passed ? "pass" : "fail");
-}
-
-function describe(message) {
-  var $li = document.createElement("li");
-  $li.innerText = message;
-  $ol.appendChild($li);
-  $li.setAttribute("class", "describe");
-  return $li;
 }
 
 test("_ is defined", function() {
