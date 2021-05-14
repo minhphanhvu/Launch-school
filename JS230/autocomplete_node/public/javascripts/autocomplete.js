@@ -22,21 +22,71 @@ const Autocomplete = {
 
   bindEvents: function() {
     this.input.addEventListener('input', this.valueChanged.bind(this));
+    this.input.addEventListener('keydown', this.handleKeydown.bind(this));
+    this.listUI.addEventListener('click', this.handleMouseClick.bind(this));
   },
 
   valueChanged: function() {
     let value = this.input.value;
+    this.previousValue = value;
 
     if (value.length > 0) {
       this.fetchMatches(value, matches => {
         this.visible = true;
         this.matches = matches;
         this.bestMatchIndex = 0;
+        this.selectedIndex = null;
         this.draw();
       });
     } else {
       this.reset();
     }
+  },
+
+  handleKeydown: function(event) {
+    switch(event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        if (this.selectedIndex === null || this.selectedIndex === this.matches.length - 1) {
+          this.selectedIndex = 0;
+        } else {
+          this.selectedIndex += 1;
+        }
+        this.bestMatchIndex = null;
+        this.draw();
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        if (this.selectedIndex === null || this.selectedIndex === 0) {
+          this.selectedIndex = this.matches.length - 1;
+        } else {
+          this.selectedIndex -= 1;
+        }
+        this.bestMatchIndex = null;
+        this.draw();
+        break;
+      case 'Tab':
+        if (this.bestMatchIndex !== null && this.matches.length !== 0) {
+          this.input.value = this.matches[this.bestMatchIndex].name;
+          event.preventDefault();
+        }
+        this.reset();
+        break;
+      case 'Enter':
+        this.reset();
+        break;
+      case 'Escape': // escape
+        this.input.value = this.previousValue;
+        this.reset();
+        break;
+    }
+  },
+
+  handleMouseClick: function(event) {
+    event.preventDefault();
+    let country = event.target.textContent;
+    this.input.value = country;
+    this.reset();
   },
 
   fetchMatches: function(query, callback) {
@@ -68,9 +118,14 @@ const Autocomplete = {
       this.overlay.textContent = '';
     }
 
-    this.matches.forEach(match => {
+    this.matches.forEach((match, index) => {
       let li = document.createElement('li');
       li.classList.add('autocomplete-ui-choice');
+
+      if (index === this.selectedIndex) {
+        li.classList.add('selected');
+        this.input.value = match.name;
+      }
 
       li.textContent = match.name;
       this.listUI.appendChild(li);
@@ -86,6 +141,8 @@ const Autocomplete = {
     this.visible = false;
     this.matches = [];
     this.bestMatchIndex = null;
+    this.selectedIndex = null;
+    this.previousValue = null;
 
     this.draw();
   },
