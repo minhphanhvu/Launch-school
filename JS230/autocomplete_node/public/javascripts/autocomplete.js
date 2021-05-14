@@ -1,3 +1,5 @@
+import debounce from './debounce.js';
+
 const Autocomplete = {
   wrapInput: function() {
     let wrapper = document.createElement('div');
@@ -21,7 +23,7 @@ const Autocomplete = {
   },
 
   bindEvents: function() {
-    this.input.addEventListener('input', this.valueChanged.bind(this));
+    this.input.addEventListener('input', this.valueChanged);
     this.input.addEventListener('keydown', this.handleKeydown.bind(this));
     this.listUI.addEventListener('click', this.handleMouseClick.bind(this));
   },
@@ -159,8 +161,10 @@ const Autocomplete = {
 
     this.wrapInput();
     this.createUI();
-    this.bindEvents();
 
+    this.valueChanged = debounce(this.valueChanged.bind(this), 300)
+
+    this.bindEvents();
     this.reset();
   }
 };
