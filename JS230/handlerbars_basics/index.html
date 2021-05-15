@@ -1,0 +1,35 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+  <script id="posts" type="text/x-handlebars">
+    {{#each posts}}
+    <article>
+      <h1>{{title}}</h1>
+      <p><time>Posted on {{published}}</time></p>
+      {{{body}}}
+      <p class="tags_list">
+        {{#if tags}}
+        Tags:
+        {{#each tags}}
+          {{>tag}}
+        {{/each}}
+        {{else}}
+        Not tagged
+        {{/if}}
+      </p>
+    </article>
+    {{/each}}
+  </script>
+  <script id="tag" type="text/x-handlebars">
+    <strong>{{this}}</strong>
+  </script>
+  <script src="index.js"></script>
+</head>
+<body>
+</body>
+</html>
