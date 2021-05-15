@@ -1,1 +1,1 @@
-All assignments and projects that can be shown from Launch School
+All assignments and projects that can be shown from [Launch School](https://launchschool.com/)
