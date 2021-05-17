@@ -4,11 +4,14 @@ $(function() {
 
   $nav.on("click", "a", function(e) {
     e.preventDefault();
-    let $li = $(e.currentTarget).closest("li");
-    let idx = $li.index();
+    let $li = $(e.currentTarget).closest("li")
+    let $img = $(e.currentTarget).find("img");
+    let src = $img.attr("src")
+    console.log(src)
 
     $slideshow.find("figure").stop().filter(":visible").fadeOut(300);
-    $slideshow.find("figure").eq(idx).delay(300).fadeIn(300);
+    $slideshow.find("figure img").attr("src", src);
+    $slideshow.find("figure").delay(300).fadeIn(300);
     $nav.find(".active").removeClass("active");
     $li.addClass("active");
   });
