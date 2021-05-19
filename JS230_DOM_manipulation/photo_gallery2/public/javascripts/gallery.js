@@ -77,6 +77,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
   xhr.send();
 
+  // Likes and favorites
+  let header = document.querySelector("section > header");
+  header.addEventListener("click", (e) => {
+    e.preventDefault();
+    let button = e.target;
+    let buttonType = button.dataset.property;
+    if (buttonType) {
+      let dataId = button.dataset.id;
+      let href = button.getAttribute("href");
+      let data = `photo_id=${dataId}`
+      let text = button.textContent;
+
+      let xhr = new XMLHttpRequest();
+      xhr.responseType = "json";
+      xhr.open("POST", href);
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhr.addEventListener("load", () => {
+        json = xhr.response;
+        button.textContent = text.replace(/\d+/, json.total);
+      })
+      xhr.send(data);
+    }
+  })
+
   // Helpers
   function renderPhotos(photos) {
     let slides = document.querySelector("#slides");
