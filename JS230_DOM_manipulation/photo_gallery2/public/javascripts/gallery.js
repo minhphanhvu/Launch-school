@@ -101,6 +101,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
+  // Posting comments
+  let form = document.querySelector("form")
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    let data = new FormData(form);
+    let currentSlide = slideshow.currentSlide
+    data.set("photo_id", currentSlide.dataset.id);
+    data = new URLSearchParams([...data])
+    let url = form.getAttribute("action");
+    let method = form.getAttribute("method");
+    
+    let xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+    xhr.responseType = "json";
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.addEventListener("load", () => {
+      json = xhr.response;
+      form.reset();
+      let comments = document.querySelector("#comments ul");
+      comments.insertAdjacentHTML("beforeend", templates.photo_comment(json))
+    })
+    xhr.send(data);
+  })
+
   // Helpers
   function renderPhotos(photos) {
     let slides = document.querySelector("#slides");
