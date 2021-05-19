@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     photos = xhr.response;
     renderPhotos(photos);
     renderPhotoInformation(photos[0].id);
+    getCommentsFor(photos[0].id);
   });
 
   xhr.send();
@@ -33,5 +34,19 @@ document.addEventListener("DOMContentLoaded", () => {
     let photo = photos.filter(p => p.id === idx)[0];
     let header = document.querySelector("section > header");
     header.insertAdjacentHTML("beforeend", templates.photo_information(photo));
+  }
+
+  function getCommentsFor(idx) {
+    let newXhr = new XMLHttpRequest();
+    newXhr.responseType = "json";;
+    newXhr.open("GET", `/comments?photo_id=${idx}`);
+
+    newXhr.addEventListener("load", () => {
+      comments = newXhr.response;
+      let ul = document.querySelector("#comments > ul");
+      ul.insertAdjacentHTML("beforeend", templates.photo_comments({ comments: comments }));
+    })
+
+    newXhr.send();
   }
 })
