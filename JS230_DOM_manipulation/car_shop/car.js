@@ -20,8 +20,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   class App {
     constructor() {
+      this.display = document.getElementById("cars");
       this.initFilter();
       this.initCars();
+      this.addFilterListener();
     }
     initFilter() {
       let filters = document.getElementById("filters");
@@ -34,11 +36,41 @@ document.addEventListener("DOMContentLoaded", () => {
         }));
     }
     initCars() {
-      let display = document.getElementById("cars");
-      display.insertAdjacentHTML("beforeend", templates.cars_template({ cars: cars }));
+      this.display.insertAdjacentHTML("beforeend", templates.cars_template({ cars: cars }));
     }
     extractFilter(filter) {
       return cars.map(car => car[filter])
+    }
+    addFilterListener() {
+      document.querySelector(".filter_btn").addEventListener("click", (e) => {
+        let filterValues = [...document.querySelectorAll("select")].map(sel => sel.value);
+        [filterValues[2], filterValues[3]] = [Number(filterValues[2]), Number(filterValues[3])];
+        let filteredCars = this.filterCars.call(this, filterValues, cars);
+        this.display.textContent = '';
+        this.display.insertAdjacentHTML("beforeend", templates.cars_template({cars: filteredCars}))
+      })
+    }
+    filterCars(values, cars) {
+      const props = ['make', 'model', 'price', 'year'];
+      let filters = {};
+      values.forEach((val, idx) => {
+        if (val) {
+          filters[props[idx]] = val;
+        }
+      })
+      if (Object.keys(filters).length === 0) {
+        return cars;
+      }
+      let filteredCars = cars.filter(car => this.rightCar(car, filters))
+      return filteredCars
+    }
+    rightCar(car, filters) {
+      for (let prop in filters) {
+        if (car[prop] !== filters[prop]) {
+          return false
+        }
+      }
+      return true
     }
   }
 
