@@ -1,0 +1,190 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+    <link rel="stylesheet" href="car.css" />
+    <script src="car.js"></script>
+    <title>Cars for Sale</title>
+  </head>
+  <body screen_capture_injected="true">
+    <header>
+      <h1>Buy Used Cars</h1>
+      <div id="filters">
+        <label for="make_select">Make</label>
+        <select name="make" id="make_select">
+          <option value="">All</option>
+          <option value="Honda">Honda</option>
+          <option value="Toyota">Toyota</option>
+          <option value="Suzuki">Suzuki</option>
+          <option value="Audi">Audi</option>
+        </select>
+
+        <label for="model_select">Model</label>
+        <select name="model" id="model_select">
+          <option value="">All</option>
+          <option value="Accord">Accord</option>
+          <option value="Camry">Camry</option>
+          <option value="Corrolla">Corrolla</option>
+          <option value="Swift">Swift</option>
+          <option value="A4">A4</option>
+        </select>
+
+        <label for="price_select">Price</label>
+        <select name="price" id="price_select">
+          <option value="">Any</option>
+          <option value="7000">7000</option>
+          <option value="11000">11000</option>
+          <option value="12500">12500</option>
+          <option value="15000">15000</option>
+          <option value="9000">9000</option>
+          <option value="25000">25000</option>
+          <option value="26000">26000</option>
+        </select>
+
+        <label for="year_select">Year</label>
+        <select name="year" id="year_select">
+          <option value="">Any</option>
+          <option value="2005">2005</option>
+          <option value="2008">2008</option>
+          <option value="2009">2009</option>
+          <option value="2016">2016</option>
+          <option value="2014">2014</option>
+          <option value="2013">2013</option>
+        </select>
+
+        <button class="filter_btn">Filter</button>
+      </div>
+    </header>
+    <main>
+      <div id="cars">
+        <div class="car">
+          <figure>
+            <img src="images/honda-accord-2005.jpg" />
+          </figure>
+          <h2>Honda Accord</h2>
+          <p class="year">Year: 2005</p>
+          <p class="price">Price: $7000</p>
+          <a href="#">Buy</a>
+        </div>
+
+        <div class="car">
+          <figure>
+            <img src="images/honda-accord-2008.jpg" />
+          </figure>
+          <h2>Honda Accord</h2>
+          <p class="year">Year: 2008</p>
+          <p class="price">Price: $11000</p>
+          <a href="#">Buy</a>
+        </div>
+
+        <div class="car">
+          <figure>
+            <img src="images/toyota-camry-2009.jpg" />
+          </figure>
+          <h2>Toyota Camry</h2>
+          <p class="year">Year: 2009</p>
+          <p class="price">Price: $12500</p>
+          <a href="#">Buy</a>
+        </div>
+
+        <div class="car">
+          <figure>
+            <img src="images/toyota-corrolla-2016.jpg" />
+          </figure>
+          <h2>Toyota Corrolla</h2>
+          <p class="year">Year: 2016</p>
+          <p class="price">Price: $15000</p>
+          <a href="#">Buy</a>
+        </div>
+
+        <div class="car">
+          <figure>
+            <img src="images/suzuki-swift-2014.jpg" />
+          </figure>
+          <h2>Suzuki Swift</h2>
+          <p class="year">Year: 2014</p>
+          <p class="price">Price: $9000</p>
+          <a href="#">Buy</a>
+        </div>
+
+        <div class="car">
+          <figure>
+            <img src="images/audi-a4-2013.jpg" />
+          </figure>
+          <h2>Audi A4</h2>
+          <p class="year">Year: 2013</p>
+          <p class="price">Price: $25000</p>
+          <a href="#">Buy</a>
+        </div>
+
+        <div class="car">
+          <figure>
+            <img src="images/audi-a4-2013.jpg" />
+          </figure>
+          <h2>Audi A4</h2>
+          <p class="year">Year: 2013</p>
+          <p class="price">Price: $26000</p>
+          <a href="#">Buy</a>
+        </div>
+      </div>
+    </main>
+
+    <script id="filters_template" type="text/x-handlebars-template">
+      <label for="make_select">Make</label>
+      <select name="make" id="make_select">
+        <option value="">All</option>
+        {{#each makes}}
+          <option value="{{.}}">{{.}}</option>
+        {{/each}}
+      </select>
+
+      <label for="model_select">Model</label>
+      <select name="model" id="model_select">
+        <option value="">All</option>
+        {{#each models}}
+          <option value="{{.}}">{{.}}</option>
+        {{/each}}
+      </select>
+
+      <label for="price_select">Price</label>
+      <select name="price" id="price_select">
+        <option value="">Any</option>
+        {{#each prices}}
+          <option value="{{.}}">{{.}}</option>
+        {{/each}}
+      </select>
+
+      <label for="year_select">Year</label>
+      <select name="year" id="year_select">
+        <option value="">Any</option>
+        {{#each years}}
+          <option value="{{.}}">{{.}}</option>
+        {{/each}}
+      </select>
+
+      <button class="filter_btn">Filter</button>
+    </script>
+
+    <script id="cars_template" type="text/x-handlebars-templates">
+      {{#each cars}}
+        {{> car_template}}
+      {{/each}}
+    </script>
+
+    <script id="car_template" type="text/x-handlebars-templates">
+      <div class="car">
+        <figure>
+          <img src="{{image}}">
+        </figure>
+        <h2>{{make}} {{model}}</h2>
+        <p class="year">Year: {{year}}</p>
+        <p class="price">Price: ${{price}}</p>
+        <a href="#">Buy</a>
+      </div>
+    </script>
+
+    <script src="app.js"></script>
+  </body>
+</html>
