@@ -21,25 +21,45 @@ document.addEventListener("DOMContentLoaded", () => {
   class App {
     constructor() {
       this.display = document.getElementById("cars");
+      this.filters = document.getElementById("filters");
       this.initFilter();
       this.initCars();
+      this.filterChangeDetect();
       this.addFilterListener();
     }
     initFilter() {
-      let filters = document.getElementById("filters");
-      filters
+      this.filters
         .insertAdjacentHTML("beforeend", templates.filters_template({ 
-          makes: this.extractFilter('make'),
-          models: this.extractFilter('model'),
-          prices: this.extractFilter('price'),
-          years: this.extractFilter('year')
+          makes: this.extractFilter('make', cars),
+          models: this.extractFilter('model', cars),
+          prices: this.extractFilter('price', cars),
+          years: this.extractFilter('year', cars)
         }));
     }
     initCars() {
       this.display.insertAdjacentHTML("beforeend", templates.cars_template({ cars: cars }));
     }
-    extractFilter(filter) {
-      return cars.map(car => car[filter])
+    extractFilter(filter, cars) {
+      return cars.map(car => car[filter]).filter((val, idx, arr) => {
+        return arr.indexOf(val) === idx;
+      });
+    }
+    filterChangeDetect() {
+      [...document.querySelectorAll("select")].forEach(select => {
+        select.addEventListener("change", () => {
+          let filterValues = [...document.querySelectorAll("select")].map(sel => sel.value);
+          [filterValues[2], filterValues[3]] = [Number(filterValues[2]), Number(filterValues[3])];
+          let filteredCars = this.filterCars.call(this, filterValues, cars);
+          this.filters.textContent = '';
+          this.filters
+            .insertAdjacentHTML("beforeend", templates.filters_template({
+              makes: this.extractFilter('make', filteredCars),
+              models: this.extractFilter('model', filteredCars),
+              prices: this.extractFilter('price', filteredCars),
+              years: this.extractFilter('year', filteredCars)
+            }))
+        })
+      })
     }
     addFilterListener() {
       document.querySelector(".filter_btn").addEventListener("click", (e) => {
