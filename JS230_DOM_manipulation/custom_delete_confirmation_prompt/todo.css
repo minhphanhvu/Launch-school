@@ -82,6 +82,41 @@ span.remove::after {
   /* transition */
 }
 
+.confirm_wrapper {
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+  z-index: 4;
+  padding: 20px;
+}
+
+.actions {
+  position: absolute;
+  bottom: 1%;
+  right: 2%;
+  padding: 10px;
+}
+
+.actions a {
+  display: inline-block;
+  text-decoration: none;
+  padding: 3px 2px;
+  margin: 2px;
+  border-radius: 4px;
+  color: white;
+  width: 60px;
+  height: 25px;
+  text-align: center;
+}
+
+.confirm_yes {
+  background: rgb(138, 6, 6);
+}
+
+.confirm_no {
+  background: rgb(65, 160, 3);
+}
+
 .hide {
   visibility: hidden;
   opacity: 0;
