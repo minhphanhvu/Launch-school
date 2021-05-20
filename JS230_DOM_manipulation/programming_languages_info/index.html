@@ -1,0 +1,26 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="programming.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+    <script src="programming.js"></script>
+  </head>
+  <body screen_capture_injected="true">
+    <h1>Programming Languages</h1>
+    <div id="languages">
+    </div>
+
+    <script data-type="language" type="text/x-handlebars">
+      {{#each languages}}
+      <div class="lang" data-lang="{{name}}">
+        <h2>{{name}}</h2>
+        <p>{{description}}</p>
+        <a href="#" class="more">Show Less</a>
+      </div>
+      {{/each}}
+    </script>
+  </body>
+</html>
