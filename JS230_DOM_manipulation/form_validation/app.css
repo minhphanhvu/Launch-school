@@ -20,6 +20,10 @@ form {
   border-radius: 4px;
 }
 
+.form_errors {
+  color: rgb(212, 17, 17);
+}
+
 dt {
   padding: 20px 0 5px 0;
 }
@@ -49,6 +53,20 @@ input.error {
 .error_message {
   margin-left: 30px;
   color: rgb(212, 17, 17);
+}
+
+#credit_card {
+  display: flex;
+  width: 50px;
+}
+
+.cd {
+  display: inline-block;
+  width: 65px;
+}
+
+.hyphen {
+  display: inline-block;
 }
 
 button {

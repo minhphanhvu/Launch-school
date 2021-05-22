@@ -3,6 +3,7 @@ class FieldSet {
     this.fields = {};
     this.fillFields();
     this.addFieldEvents(); 
+    this.submitEvent();
   }
   fillFields() {
     [...document.querySelectorAll("input")].forEach(input => {
@@ -15,6 +16,8 @@ class FieldSet {
         this.checkValidations.call(this, e.target, e.target.value);
       })
     }
+    this.onlyCharactersAllowEvents.call(this, [this.fields["first_name"], this.fields["last_name"]]);
+    this.creditCardEvents();
   }
   checkValidations(input) {
     let isRequiredAndPattern = input.hasAttribute("required") && input.hasAttribute("pattern");
@@ -80,12 +83,78 @@ class FieldSet {
     return message;
   }
   addMessage(input, message) {
-    input.nextElementSibling.textContent = message; 
+    input.closest("dd").querySelector("span").textContent = message; 
     input.classList.add("error");
   }
   removeMessage(input) {
     input.classList.remove("error");
-    input.nextElementSibling.textContent = '';
+    input.closest("dd").querySelector("span").textContent = '';
+  }
+  onlyCharactersAllowEvents(inputs) {
+    inputs.forEach(input => {
+      input.addEventListener("keypress", (e) => {
+        if (/[^a-zA-Z'\s]+/g.test(e.key)) {
+          e.preventDefault();
+        } else {
+          e.target.innerText += e.key;
+        }
+      })
+    })
+  }
+  creditCardEvents() {
+    let inputs = [...document.querySelectorAll(".cd")];
+    inputs.forEach(input => {
+      input.addEventListener("keypress", (e) => {
+        if (/[^\d]+/g.test(e.key)) {
+          e.preventDefault();
+        } else {
+          e.target.innerText += e.key;
+        }
+      })
+    })
+    inputs.forEach(input => {
+      input.addEventListener("keyup", (e) => {
+        let targets = ['cd1', 'cd2', 'cd3'];
+        if (targets.includes(e.target.id)) {
+          let nextInput = e.target.nextElementSibling.nextElementSibling;
+          if (e.target.value.length === 4) {
+            nextInput.focus();
+          }
+        }
+      })
+    })
+  }
+  allInputsValid() {
+    let inputs = document.querySelectorAll('input');
+    let allValid = true;
+
+    inputs.forEach(input => {
+      if (input.validity.valid === false) {
+        allValid = false;
+      }
+    });
+
+    return allValid;
+  }
+  submitEvent() {
+    document.querySelector("form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      let allValid = this.allInputsValid.call(this);
+      if (allValid) {
+        let form = document.querySelector("form");
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", form.action);
+        let data = new FormData(form);
+
+        xhr.send(data);
+      } else {
+        let formErrors = document.querySelector(".form_errors");
+        formErrors.textContent = "Fix errors before submitting this form.";
+        setTimeout(() => {
+          formErrors.textContent = '';
+        }, 5000)
+      }
+    })
   }
 }
 

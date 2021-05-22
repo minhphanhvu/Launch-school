@@ -3,7 +3,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="app.css" />
     <title>Form validation</title>
   </head>
   <body screen_capture_injected="true">
@@ -71,6 +71,20 @@
               pattern="\d{3}-\d{3}-\d{4}"
               placeholder="111-222-3333"
             />
+            <span class="error_message"></span>
+          </dd>
+
+          <dt>
+            <label for="credit_card">Credit Card</label>
+          </dt>
+          <dd id="#credit_card">
+            <input id="cd1" type="text" name="credit_card" class="cd" maxlength="4" />
+            <div class="hyphen">-</div class="hyphen">
+            <input id="cd2" type="text" name="credit_card" class="cd" maxlength="4" />
+            <div class="hyphen">-</div class="hyphen">
+            <input id="cd3" type="text" name="credit_card" class="cd" maxlength="4" />
+            <div class="hyphen">-</div class="hyphen">
+            <input id="cd4" type="text" name="credit_card" class="cd" maxlength="4" />
             <span class="error_message"></span>
           </dd>
 
