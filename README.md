@@ -6,6 +6,7 @@ All assignments and projects that can be shown from [Launch School](https://laun
   - Master debugging skills
   - Understand basic concepts such as variable scopes and method arguments
   - Apply PEDAC process to problem-solving
+  - Practice live interview assessment
 
 ## RB120 Object Oriented Programming:
   - Understand classes, objects, inheritance
@@ -17,6 +18,7 @@ All assignments and projects that can be shown from [Launch School](https://laun
   - Understand blocks in Ruby
   - Build built-in methods using blocks from scratch
   - Introduce Minitest
+  - Practice live interview assessment
 
 ## LS170 Networking Foundations
   - HTTP request/response cycle
@@ -58,6 +60,7 @@ All assignments and projects that can be shown from [Launch School](https://laun
     - List Processing and Functional Abstractions
     - String and Text Processing
   - Apply PEDAC process to problem-solving
+  - Practice live interview assessment
 
 ## JS225 Object Oriented JavaScript
   - Cover topics:
